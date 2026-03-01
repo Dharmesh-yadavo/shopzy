@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -11,25 +10,32 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
-import { loginUserSchema } from "@/features/auth/auth.schema";
+import { LoginUserData, loginUserSchema } from "@/features/auth/auth.schema";
+import { loginUserAction } from "@/features/auth/server/auth.action";
+import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isPending, startTransition] = useTransition();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = useForm<z.infer<typeof loginUserSchema>>({
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginUserData>({
     resolver: zodResolver(loginUserSchema),
   });
 
-  const onSubmit = (values: z.infer<typeof loginUserSchema>) => {
-    startTransition(async () => {
-      console.log("Logging in:", values);
-      // await loginUser(values);
-    });
+  const onSubmit = async (values: LoginUserData) => {
+    const res = await loginUserAction(values);
+    if (res.status === "error") {
+      toast.error(res.message);
+    } else if (res.status === "success") {
+      toast.success(res.message);
+      redirect("/"); 
+    }
+    reset();
   };
 
   return (
@@ -88,10 +94,10 @@ const LoginPage = () => {
 
               <Button
                 type="submit"
-                disabled={isPending}
+                disabled={isSubmitting}
                 className="w-full h-12 bg-yellow-400 text-black font-bold text-lg hover:bg-yellow-300 active:scale-[0.98] transition-all disabled:opacity-50"
               >
-                {isPending ? "Signing in..." : "Sign In"}
+                {isSubmitting ? "Signing in..." : "Sign In"}
               </Button>
             </form>
 

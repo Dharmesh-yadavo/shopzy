@@ -13,7 +13,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Eye, EyeOff, ChevronLeft } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { TbPlayerTrackNextFilled } from "react-icons/tb";
-import { RegisterUserSchema } from "@/features/auth/auth.schema";
+import {
+  RegisterUserData,
+  RegisterUserSchema,
+} from "@/features/auth/auth.schema";
+import { RegisterUserAction } from "@/features/auth/server/auth.action";
+import { toast } from "sonner";
+import { redirect } from "next/navigation";
 
 const RegisterPage = () => {
   const [step, setStep] = useState(1);
@@ -26,7 +32,7 @@ const RegisterPage = () => {
     setValue,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<z.infer<typeof RegisterUserSchema>>({
+  } = useForm<RegisterUserData>({
     resolver: zodResolver(RegisterUserSchema),
     defaultValues: {
       fullName: "",
@@ -36,10 +42,16 @@ const RegisterPage = () => {
     },
   });
 
-  const onSubmit = (values: z.infer<typeof RegisterUserSchema>) => {
+  const onSubmit = async (values: RegisterUserData) => {
     // BACKEND CALL HERE
-    console.log("Form Values:", values);
-    // const res = await registerUser(values);
+    // console.log("Form Values:", values);
+    const res = await RegisterUserAction(values);
+    if (res.status === "error") {
+      toast.error(res.message);
+    } else if (res.status === "success") {
+      toast.success(res.message);
+      redirect("/");
+    }
     reset();
   };
 

@@ -4,9 +4,9 @@
 // Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
+
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -18,29 +18,42 @@ model User {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String   @unique
-  password  String?
+  password  String? // Optional only if using OAuth
   image     String?
-  role      Role    @default(user)
+  role      Role     @default(user)
 
-  //vendor specific fields
-  shopName         String?
-  shopAddress      String?
-  gstNumber        String?
-  isApproved       Boolean?         @default(false)
+  // Vendor Fields
+  shopName           String?
+  shopAddress        String?
+  gstNumber          String?
+  isApproved         Boolean?           @default(false)
   verificationStatus VerificationStatus @default(pending)
-  requestedAt      DateTime?
-  approvedAt       DateTime?
-  rejectedReason   String?
+  requestedAt        DateTime?
+  approvedAt         DateTime?
+  rejectedReason     String?
 
-  vendorProducts   String[]         @db.ObjectId
-  orders           String[]         @db.ObjectId
+  // Relations
+  sessions       SessionTable[]
 
-  cart             CartItem[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  cart      CartItem[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
   @@map("users")
+}
+
+model SessionTable {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userAgent String?
+  ip        String?
+  createdAt DateTime @default(now())
+  expiresAt  DateTime
+
+  @@map("sessions")
+
+  @@unique([userId, userAgent])
 }
 
 enum Role {
@@ -59,3 +72,4 @@ type CartItem {
   product String @db.ObjectId
   quantity Int
 }
+
