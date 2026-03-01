@@ -52,7 +52,7 @@ const createRefreshToken = (sessionId: string) => {
 };
 
 export const verifyJWTToken = (token: string) => {
-  return jwt.verify(token, process.env.JWT_ACCESS_SECRET!);
+  return jwt.verify(token, process.env.JWT_SECRET_KEY!);
 };
 
 const findSessionById = async (sessionId: string) => {
