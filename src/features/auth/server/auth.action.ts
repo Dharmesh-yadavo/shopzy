@@ -5,8 +5,12 @@ import {
   loginUserSchema,
   RegisterUserData,
   RegisterUserSchema,
+  UpdatePhoneAndRoleData,
+  updatePhoneAndRoleSchema,
 } from "../auth.schema";
 import { authenticateUser } from "./session";
+import { get } from "http";
+import { getCurrentUser } from "./auth.queries";
 
 export const RegisterUserAction = async (data: RegisterUserData) => {
   try {
@@ -93,6 +97,47 @@ export const loginUserAction = async (data: {
     console.error("Login Error:", error);
     return {
       status: "ERROR",
+      message: "Unknown Error Occurred! Please Try Again Later",
+    };
+  }
+};
+
+export const EditPhoneAndRoleAction = async (data: UpdatePhoneAndRoleData) => {
+  try {
+    const { data: validatedData, error } =
+      updatePhoneAndRoleSchema.safeParse(data);
+
+    if (error || !validatedData) {
+      return {
+        status: "error",
+        message: error?.issues[0].message || "Validation failed",
+      };
+    }
+
+    const { phone, role } = validatedData;
+
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return { status: "error", message: "User not authenticated." };
+    }
+
+    await prisma.user.update({
+      where: { id: user?.id },
+      data: {
+        phone,
+        role,
+      },
+    });
+
+    return {
+      status: "success",
+      message: "Phone and role updated successfully",
+    };
+  } catch (error) {
+    console.error("Edit Phone and Role Error:", error);
+    return {
+      status: "error",
       message: "Unknown Error Occurred! Please Try Again Later",
     };
   }

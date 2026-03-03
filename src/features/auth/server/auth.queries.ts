@@ -26,3 +26,10 @@ export const getCurrentUser = async () => {
     return null;
   }
 };
+
+export const isAdminExist = async () => {
+  const adminUser = await prisma.user.findFirst({
+    where: { role: "admin" },
+  });
+  return !!adminUser;
+};

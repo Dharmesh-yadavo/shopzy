@@ -11,6 +11,7 @@ generator client {
 
 datasource db {
   provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -18,6 +19,7 @@ model User {
   name      String
   email     String   @unique
   password  String? // Optional only if using OAuth
+  phone     String?  @unique
   image     String?
   role      Role     @default(user)
 

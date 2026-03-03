@@ -39,3 +39,15 @@ export const loginUserSchema = z.object({
 });
 
 export type LoginUserData = z.infer<typeof loginUserSchema>;
+
+export const updatePhoneAndRoleSchema = z.object({
+  phone: z
+    .string("Phone number is required")
+    .regex(/^\d+$/, "Phone number must contain only digits")
+    .max(10, "Phone number must not exceed 10 digits"),
+  role: z.enum(["admin", "vendor", "user"], {
+    message: "Please select a valid role.",
+  }),
+});
+
+export type UpdatePhoneAndRoleData = z.infer<typeof updatePhoneAndRoleSchema>;
