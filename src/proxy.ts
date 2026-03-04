@@ -16,9 +16,10 @@ export async function proxy(req: NextRequest) {
   }
 
   const cookiesStore = await cookies();
-  const session = cookiesStore.get("access_token")?.value;
+  const accessToken = cookiesStore.get("access_token")?.value;
+  const refreshToken = cookiesStore.get("access_token")?.value;
 
-  if (!session) {
+  if (!accessToken && !refreshToken) {
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("callbackUrl", req.url);
     return NextResponse.redirect(loginUrl);

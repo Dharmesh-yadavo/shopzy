@@ -1,4 +1,7 @@
 import EditPhoneAndRole from "@/components/auth/EditPhoneAndRole";
+import Footer from "@/components/user/Footer";
+import HeroSection from "@/components/user/HeroSection";
+import ProductShowcase from "@/components/user/ProductShowcase";
 import {
   getCurrentUser,
   isAdminExist,
@@ -15,9 +18,12 @@ export default async function Home() {
     return <EditPhoneAndRole isAdmin={isAdmin} />;
   }
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <h1>Hello everyone</h1>
-      <h2>{user?.name}</h2>
+    <div className="min-h-screen bg-black text-white font-sans pt-8 ">
+      <HeroSection />
+
+      <ProductShowcase />
+
+      <Footer />
     </div>
   );
 }
