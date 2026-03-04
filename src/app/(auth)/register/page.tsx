@@ -20,6 +20,7 @@ import {
 import { RegisterUserAction } from "@/features/auth/server/auth.action";
 import { toast } from "sonner";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 const RegisterPage = () => {
   const [step, setStep] = useState(1);
@@ -207,12 +208,14 @@ const RegisterPage = () => {
                   </div>
                 </div>
 
-                <Button
-                  variant="outline"
-                  className="w-full h-12 bg-transparent text-white border-yellow-400/40 hover:text-white hover:bg-yellow-400/10"
-                >
-                  <FcGoogle className="mr-2 text-xl" /> Continue with Google
-                </Button>
+                <Link href="/api/google">
+                  <Button
+                    variant="outline"
+                    className="w-full h-12 bg-transparent text-white border-yellow-400/40 hover:text-white hover:bg-yellow-400/10"
+                  >
+                    <FcGoogle className="mr-2 text-xl" /> Continue with Google
+                  </Button>
+                </Link>
               </CardContent>
             </Card>
           </motion.div>

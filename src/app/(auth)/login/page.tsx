@@ -33,7 +33,7 @@ const LoginPage = () => {
       toast.error(res.message);
     } else if (res.status === "success") {
       toast.success(res.message);
-      redirect("/"); 
+      redirect("/");
     }
     reset();
   };
@@ -108,14 +108,16 @@ const LoginPage = () => {
               </span>
             </div>
 
-            <Button
-              variant="outline"
-              className="w-full h-12 bg-transparent text-white border-yellow-400/40 hover:text-white hover:bg-yellow-400/10 "
-            >
-              <FcGoogle className="mr-2 text-xl" /> Continue with Google
-            </Button>
+            <Link href="/api/google">
+              <Button
+                variant="outline"
+                className="w-full h-12 bg-transparent text-white border-yellow-400/40 hover:text-white hover:bg-yellow-400/10 "
+              >
+                <FcGoogle className="mr-2 text-xl" /> Continue with Google
+              </Button>
+            </Link>
 
-            <p className="text-center text-stone-400 text-sm">
+            <p className="text-center text-stone-400 text-sm pt-2">
               Don&apos;t have an account?{" "}
               <Link
                 href="/register"

@@ -9,7 +9,6 @@ import {
   updatePhoneAndRoleSchema,
 } from "../auth.schema";
 import { authenticateUser } from "./session";
-import { get } from "http";
 import { getCurrentUser } from "./auth.queries";
 
 export const RegisterUserAction = async (data: RegisterUserData) => {

@@ -133,6 +133,8 @@ export const authenticateUser = async ({
 
   const SESSION_LIFETIME = 7 * 24 * 60 * 60;
 
+  console.log("authenticateUser: ", accessToken, " ", refreshToken);
+
   cookieStore.set("access_token", accessToken, {
     secure: true,
     httpOnly: true,
