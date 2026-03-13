@@ -28,7 +28,7 @@ const Navbar = () => {
       <div className="flex items-center gap-6">
         {/* Primary Buttons - Increased padding and font weight */}
         <div className="flex items-center gap-4">
-          <Link href="/auth/sign-in">
+          <Link href="/login">
             <Button
               size="lg"
               className="flex items-center gap-2 bg-yellow-400 hover:bg-yellow-300  text-sm font-black text-black transition-all active:scale-95 shadow-[0_4px_20px_rgba(250,204,21,0.2)]"

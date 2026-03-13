@@ -10,13 +10,14 @@ import {
 export default async function Home() {
   const user = await getCurrentUser();
 
-  console.log("Current User:", user);
+  // console.log("Current User:", user);
 
   const isAdmin = await isAdminExist();
 
   if (!user?.phone || !user?.role || (user.role === "user" && !user?.phone)) {
     return <EditPhoneAndRole isAdmin={isAdmin} />;
   }
+
   return (
     <div className="min-h-screen bg-black text-white font-sans pt-8 ">
       <HeroSection />
