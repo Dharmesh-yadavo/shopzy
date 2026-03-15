@@ -12,8 +12,8 @@ import {
 } from "@/features/auth/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { redirect } from "next/navigation";
 import { EditPhoneAndRoleAction } from "@/features/auth/server/auth.action";
+import { useRouter } from "next/navigation";
 
 // Define form schema type
 
@@ -56,6 +56,8 @@ const EditPhoneAndRole = ({ isAdmin }: { isAdmin: boolean }) => {
     },
   ];
 
+  const router = useRouter();
+
   const onSubmit = async (data: UpdatePhoneAndRoleData) => {
     console.log("Form Data:", data);
     const res = await EditPhoneAndRoleAction(data);
@@ -63,7 +65,7 @@ const EditPhoneAndRole = ({ isAdmin }: { isAdmin: boolean }) => {
       toast.error(res.message);
     } else if (res.status === "success") {
       toast.success(res.message);
-      redirect("/");
+      router.push("/");
     }
     reset();
   };
