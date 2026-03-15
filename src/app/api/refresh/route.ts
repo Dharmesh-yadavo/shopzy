@@ -1,68 +1,55 @@
-import { refreshTokens, verifyJWTToken } from "@/features/auth/server/session";
-import prisma from "@/lib/prisma";
+import { refreshTokens } from "@/features/auth/server/session";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
 export async function POST() {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refresh_token")?.value;
-  const accessToken = cookieStore.get("access_token")?.value;
 
-  if (!refreshToken && !accessToken) {
-    return NextResponse.json({ error: "Invalid session" }, { status: 401 });
+  // 1. If there's no refresh token, we can't do anything.
+  if (!refreshToken) {
+    return NextResponse.json({ error: "No refresh token" }, { status: 401 });
   }
 
-  if (accessToken) {
-    try {
-      const decodedToken = verifyJWTToken(accessToken);
+  try {
+    // 2. Run your database logic to verify the session and rotation
+    const result = await refreshTokens(refreshToken);
 
-      if (typeof decodedToken === "string" || !("sessionId" in decodedToken)) {
-        throw new Error("Invalid token structure");
-      }
-
-      const session = await prisma.sessionTable.findUnique({
-        where: { id: decodedToken.sessionId },
-      });
-
-      if (!session || session.expiresAt < new Date()) {
-        throw new Error("Invalid session");
-      }
-
-      return NextResponse.json({ authenticated: true });
-    } catch (error) {
-      console.error("Access token invalid:", error);
+    if (!result) {
+      return NextResponse.json({ error: "Invalid session" }, { status: 401 });
     }
-  }
 
-  if (refreshToken) {
-    try {
-      const result = await refreshTokens(refreshToken);
+    const { newAccessToken, newRefreshToken } = result;
 
-      if (!result) {
-        return NextResponse.json({ error: "Invalid session" }, { status: 401 });
-      }
+    // 3. Set the New Access Token
+    cookieStore.set("access_token", newAccessToken, {
+      secure: true,
+      httpOnly: true,
+      maxAge: 15 * 60, // 15 mins
+      sameSite: "lax",
+      path: "/",
+    });
 
-      const { newAccessToken, newRefreshToken } = result;
+    // 4. Set the New Refresh Token (Rotation)
+    cookieStore.set("refresh_token", newRefreshToken, {
+      secure: true,
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60, // 7 days
+      sameSite: "lax",
+      path: "/",
+    });
 
-      cookieStore.set("access_token", newAccessToken, {
-        secure: true,
-        httpOnly: true,
-        maxAge: 15 * 60,
-        sameSite: "lax",
-        path: "/",
-      });
-
-      const SESSION_LIFETIME = 7 * 24 * 60 * 60;
-
-      cookieStore.set("refresh_token", newRefreshToken, {
-        secure: true,
-        httpOnly: true,
-        maxAge: SESSION_LIFETIME,
-        sameSite: "lax",
-        path: "/",
-      });
-    } catch (error) {
-      console.error("Refresh token invalid:", error);
-    }
+    // 5. CRITICAL: You MUST return a response for the browser to receive the cookies
+    return NextResponse.json({
+      success: true,
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+    });
+  } catch (error) {
+    console.error("Refresh logic failed:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 },
+    );
   }
 }

@@ -81,7 +81,7 @@ const SettingsPage = () => {
               <Textarea
                 id="bio"
                 placeholder="Premium high-performance electronics..."
-                className="bg-zinc-800/50 border-zinc-700 focus:border-amber-400 text-white min-h-[150px] rounded-xl resize-none p-4 leading-relaxed"
+                className="bg-zinc-800/50 border-zinc-700 focus:border-amber-400 text-white min-h-37 rounded-xl resize-none p-4 leading-relaxed"
               />
             </div>
           </div>

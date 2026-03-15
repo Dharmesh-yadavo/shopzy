@@ -8,13 +8,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import {
-  Edit2,
-  MoreVertical,
-  Package,
-  Filter,
-  ArrowUpDown,
-} from "lucide-react";
+import { Package, Filter, ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { AddProductModal } from "@/components/vendor/AddProductModal";
 

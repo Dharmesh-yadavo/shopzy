@@ -1,21 +1,8 @@
-import EditPhoneAndRole from "@/components/auth/EditPhoneAndRole";
 import { AlertSection } from "@/components/vendor/AlertSection";
 import { StatsGrid } from "@/components/vendor/StatsGrid";
 import { VendorDashboardHeader } from "@/components/vendor/VendorDashboardHeader";
-import {
-  getCurrentUser,
-  isAdminExist,
-} from "@/features/auth/server/auth.queries";
 
 const VendorHome = async () => {
-  const user = await getCurrentUser();
-
-  const isAdmin = await isAdminExist();
-
-  if (!user?.phone || !user?.role || (user.role === "user" && !user?.phone)) {
-    return <EditPhoneAndRole isAdmin={isAdmin} />;
-  }
-
   return (
     <div className="flex flex-col flex-1 w-full min-h-screen p-4 lg:p-8">
       {/* 1. Header with detailed vendor info */}
