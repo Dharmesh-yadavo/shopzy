@@ -6,11 +6,18 @@ import { redirect } from "next/navigation";
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getCurrentUser();
 
-  if (user?.role !== "admin") {
-    redirect("/");
+  if (!user) {
+    return null;
+    // redirect("/login");
   }
 
-  if (!user.phone || !user.role) {
+  console.log("Current User in Layout:", user?.name || "GHOST");
+
+  // if (user?.role !== "admin") {
+  //   redirect("/");
+  // }
+
+  if (!user.phone || !user.role || user?.role !== "admin") {
     redirect("/");
   }
 

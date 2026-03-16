@@ -19,6 +19,11 @@ export async function proxy(req: NextRequest) {
   const accessToken = cookiesStore.get("access_token")?.value;
   const refreshToken = cookiesStore.get("refresh_token")?.value;
 
+  if (!accessToken && !refreshToken) {
+    const loginUrl = new URL("/login", req.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
   if (!accessToken && refreshToken) {
     try {
       // Call your API route internally
@@ -30,27 +35,37 @@ export async function proxy(req: NextRequest) {
       });
 
       if (refreshRes.ok) {
-        const response = NextResponse.next();
-
-        // Get tokens from your API response (assuming they are in the JSON body)
+        // 1. Get the tokens
         const { accessToken, refreshToken } = await refreshRes.json();
 
-        // 1. For the BROWSER (so it's saved in the Application tab)
+        // 2. Modify the REQUEST headers so getCurrentUser() sees the new tokens NOW
+        const requestHeaders = new Headers(req.headers);
+        requestHeaders.set(
+          "cookie",
+          `access_token=${accessToken}; refresh_token=${refreshToken}`,
+        );
+
+        // 3. Create the response by passing the updated request headers
+        const response = NextResponse.next({
+          request: {
+            headers: requestHeaders,
+          },
+        });
+
+        // 4. Set cookies for the BROWSER so they are saved for LATER
         response.cookies.set("access_token", accessToken, {
           httpOnly: true,
           secure: true,
+          path: "/", // Always include path: "/" to avoid scope issues
         });
         response.cookies.set("refresh_token", refreshToken, {
           httpOnly: true,
           secure: true,
+          path: "/",
         });
 
-        // 2. For the PAGE (so getCurrentUser() sees it RIGHT NOW)
-        // We have to modify the REQUEST headers specifically
-        response.headers.set(
-          "cookie",
-          `access_token=${accessToken}; refresh_token=${refreshToken}`,
-        );
+        // 5. Tell Next.js not to cache this specific middleware decision
+        response.headers.set("x-middleware-cache", "no-cache");
 
         return response;
       } else {
@@ -69,11 +84,15 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  console.log(
+    `[AUTH-DEBUG] Refreshed at: ${new Date().toISOString()} | URL: ${req.nextUrl.pathname}`,
+  );
+
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:png|jpg|jpeg|gif|webp|svg|css|js)$).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|\\..*|.*\\.(?:png|jpg|jpeg|gif|webp|svg|css|js)$).*)",
   ],
 };

@@ -66,6 +66,7 @@ const EditPhoneAndRole = ({ isAdmin }: { isAdmin: boolean }) => {
     } else if (res.status === "success") {
       toast.success(res.message);
       router.push("/");
+      router.refresh();
     }
     reset();
   };
