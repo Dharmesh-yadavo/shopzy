@@ -52,12 +52,17 @@ const createRefreshToken = (sessionId: string) => {
 };
 
 export const verifyJWTToken = (token: string) => {
-  try {
-    return jwt.verify(token, process.env.JWT_SECRET_KEY!);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  } catch (e) {
-    return null;
-  }
+  const verify = jwt.verify(token, process.env.JWT_SECRET_KEY!);
+  console.log("verify: ", verify);
+  if (!verify) return null;
+  return verify;
+  // try {
+  //   return jwt.verify(token, process.env.JWT_SECRET_KEY!);
+  //   // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  // } catch (e) {
+  //   console.log(e);
+  //   return null;
+  // }
 };
 
 const findSessionById = async (sessionId: string) => {
