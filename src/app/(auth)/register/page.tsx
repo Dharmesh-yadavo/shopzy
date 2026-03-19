@@ -4,7 +4,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -17,10 +16,8 @@ import {
   RegisterUserData,
   RegisterUserSchema,
 } from "@/features/auth/auth.schema";
-import { RegisterUserAction } from "@/features/auth/server/auth.action";
-import { toast } from "sonner";
-import { redirect } from "next/navigation";
-import Link from "next/link";
+import { signIn } from "next-auth/react";
+import { RegisterUserAction } from "@/features/auth/auth.action";
 
 const RegisterPage = () => {
   const [step, setStep] = useState(1);
@@ -44,15 +41,7 @@ const RegisterPage = () => {
   });
 
   const onSubmit = async (values: RegisterUserData) => {
-    // BACKEND CALL HERE
-    // console.log("Form Values:", values);
-    const res = await RegisterUserAction(values);
-    if (res.status === "error") {
-      toast.error(res.message);
-    } else if (res.status === "success") {
-      toast.success(res.message);
-      redirect("/");
-    }
+    await RegisterUserAction(values);
     reset();
   };
 
@@ -208,14 +197,13 @@ const RegisterPage = () => {
                   </div>
                 </div>
 
-                <Link href="/api/google">
-                  <Button
-                    variant="outline"
-                    className="w-full h-12 bg-transparent text-white border-yellow-400/40 hover:text-white hover:bg-yellow-400/10"
-                  >
-                    <FcGoogle className="mr-2 text-xl" /> Continue with Google
-                  </Button>
-                </Link>
+                <Button
+                  onClick={() => signIn("google", { callbackUrl: "/" })}
+                  variant="outline"
+                  className="w-full h-12 bg-transparent text-white border-yellow-400/40 hover:text-white hover:bg-yellow-400/10"
+                >
+                  <FcGoogle className="mr-2 text-xl" /> Continue with Google
+                </Button>
               </CardContent>
             </Card>
           </motion.div>

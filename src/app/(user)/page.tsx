@@ -1,7 +1,7 @@
 import Footer from "@/components/user/Footer";
 import HeroSection from "@/components/user/HeroSection";
 import ProductShowcase from "@/components/user/ProductShowcase";
-import { getCurrentUser } from "@/features/auth/server/auth.queries";
+import { getCurrentUser } from "@/features/auth/auth.queries";
 import { redirect } from "next/navigation";
 
 export default async function Home() {

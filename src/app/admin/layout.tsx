@@ -1,21 +1,12 @@
 import { AdminSidebar } from "@/components/admin/AdminSideBar";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { getCurrentUser } from "@/features/auth/server/auth.queries";
+import { getCurrentUser } from "@/features/auth/auth.queries";
 import { redirect } from "next/navigation";
 
 const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getCurrentUser();
 
-  if (!user) {
-    return null;
-    // redirect("/login");
-  }
-
-  console.log("Current User in Layout:", user?.name || "GHOST");
-
-  // if (user?.role !== "admin") {
-  //   redirect("/");
-  // }
+  if (!user) redirect("/login");
 
   if (!user.phone || !user.role || user?.role !== "admin") {
     redirect("/");

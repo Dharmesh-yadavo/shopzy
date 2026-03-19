@@ -2,16 +2,21 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import EditVendorDetails from "@/components/vendor/EditVendorDetails";
 import { VendorSidebar } from "@/components/vendor/VendorSideBar";
 import { VerificationStatus } from "@/components/vendor/VerificationStatus";
-import { getCurrentUser } from "@/features/auth/server/auth.queries";
+import { getCurrentUser } from "@/features/auth/auth.queries";
 import { getAllVendors } from "@/features/vendor/vendor.queries";
-// import { redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 
 const Vendorlayout = async ({ children }: { children: React.ReactNode }) => {
   const user = await getCurrentUser();
 
-  console.log("Vendor user: ", user);
+  console.log("Vendor User: ", user);
+
+  if (!user) redirect("/login");
+
+  if (user.role !== "vendor") redirect("/");
 
   const vendors = await getAllVendors();
+
   console.log("vendors: ", vendors);
 
   if (

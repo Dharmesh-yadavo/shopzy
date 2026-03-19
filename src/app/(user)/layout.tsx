@@ -1,9 +1,6 @@
 import EditPhoneAndRole from "@/components/auth/EditPhoneAndRole";
 import Navbar from "@/components/user/Navbar";
-import {
-  getCurrentUser,
-  isAdminExist,
-} from "@/features/auth/server/auth.queries";
+import { getCurrentUser, isAdminExist } from "@/features/auth/auth.queries";
 import { redirect } from "next/navigation";
 
 export default async function UserLayout({
@@ -13,7 +10,7 @@ export default async function UserLayout({
 }>) {
   const user = await getCurrentUser();
 
-  console.log(user);
+  console.log("New Auth.js User", user);
 
   if (!user) {
     redirect("/login");

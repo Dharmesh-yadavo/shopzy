@@ -12,8 +12,8 @@ import {
 } from "@/features/auth/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
-import { EditPhoneAndRoleAction } from "@/features/auth/server/auth.action";
 import { useRouter } from "next/navigation";
+import { EditPhoneAndRoleAction } from "@/features/auth/auth.action";
 
 // Define form schema type
 

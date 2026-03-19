@@ -11,9 +11,8 @@ import { Eye, EyeOff } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import { LoginUserData, loginUserSchema } from "@/features/auth/auth.schema";
-import { loginUserAction } from "@/features/auth/server/auth.action";
-import { toast } from "sonner";
-import { redirect } from "next/navigation";
+import { signIn } from "next-auth/react";
+import { loginUserAction } from "@/features/auth/auth.action";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -28,13 +27,7 @@ const LoginPage = () => {
   });
 
   const onSubmit = async (values: LoginUserData) => {
-    const res = await loginUserAction(values);
-    if (res.status === "error") {
-      toast.error(res.message);
-    } else if (res.status === "success") {
-      toast.success(res.message);
-      redirect("/");
-    }
+    await loginUserAction(values);
     reset();
   };
 
@@ -108,14 +101,13 @@ const LoginPage = () => {
               </span>
             </div>
 
-            <Link href="/api/google">
-              <Button
-                variant="outline"
-                className="w-full h-12 bg-transparent text-white border-yellow-400/40 hover:text-white hover:bg-yellow-400/10 "
-              >
-                <FcGoogle className="mr-2 text-xl" /> Continue with Google
-              </Button>
-            </Link>
+            <Button
+              onClick={() => signIn("google", { callbackUrl: "/" })}
+              variant="outline"
+              className="w-full h-12 bg-transparent text-white border-yellow-400/40 hover:text-white hover:bg-yellow-400/10 "
+            >
+              <FcGoogle className="mr-2 text-xl" /> Continue with Google
+            </Button>
 
             <p className="text-center text-stone-400 text-sm pt-2">
               Don&apos;t have an account?{" "}
