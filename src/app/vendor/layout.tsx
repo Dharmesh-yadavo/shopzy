@@ -31,7 +31,13 @@ const Vendorlayout = async ({ children }: { children: React.ReactNode }) => {
   }
 
   if (user?.role === "vendor" && user.verificationStatus === "rejected") {
-    return <VerificationStatus status="rejected" />;
+    return (
+      <VerificationStatus
+        status="rejected"
+        reason={user?.rejectedReason}
+        vendor={user}
+      />
+    );
   }
 
   return (

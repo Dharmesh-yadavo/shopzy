@@ -33,42 +33,11 @@ model User {
   approvedAt         DateTime?
   rejectedReason     String?
 
-  // Relations
-  sessions       SessionTable[]
-  oauthAccounts  OAuthAccount[]
-
   cart      CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 
   @@map("users")
-}
-
-model SessionTable {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userAgent String?
-  ip        String?
-  createdAt DateTime @default(now())
-  expiresAt  DateTime
-
-  @@map("sessions")
-
-  @@unique([userId, userAgent])
-}
-
-model OAuthAccount {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  provider     String
-  providerId   String
-  userId       String   @db.ObjectId 
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  createdAt    DateTime @default(now())
-
-  @@map("oauthTable")
-
-  @@unique([provider, providerId])
 }
 
 enum Role {

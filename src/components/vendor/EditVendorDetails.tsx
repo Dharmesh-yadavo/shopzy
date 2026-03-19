@@ -20,7 +20,6 @@ import {
 } from "@/features/vendor/vendor.schema";
 import { EditVendorDetailsAction } from "@/features/vendor/vendor.action";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 
 const containerVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -49,17 +48,13 @@ const EditVendorDetails = () => {
     resolver: zodResolver(vendorUpdateDetailsSchema),
   });
 
-  const router = useRouter();
-
   const onSubmit = async (values: vendorUpdateDetailsData) => {
-    console.log("Form Data:", values);
+    // console.log("Form Data:", values);
     const res = await EditVendorDetailsAction(values);
     if (res.status === "error") {
       toast.error(res.message);
     } else if (res.status === "success") {
       toast.success(res.message);
-      router.push("/vendor");
-      router.refresh();
     }
     reset();
   };

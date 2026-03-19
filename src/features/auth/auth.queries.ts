@@ -25,7 +25,6 @@ const safeUserSelect = {
 
 export const getCurrentUser = cache(async () => {
   const session = await auth();
-  console.log("Session: ", session);
 
   const user = await prisma.user.findUnique({
     where: { id: session?.user.id },

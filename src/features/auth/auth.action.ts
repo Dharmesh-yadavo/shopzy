@@ -10,6 +10,7 @@ import {
 } from "./auth.schema";
 import { getCurrentUser } from "./auth.queries";
 import { signIn } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export const RegisterUserAction = async (data: RegisterUserData) => {
   const { data: validatedData, error } = RegisterUserSchema.safeParse(data);
@@ -87,6 +88,8 @@ export const EditPhoneAndRoleAction = async (data: UpdatePhoneAndRoleData) => {
         role,
       },
     });
+
+    revalidatePath("/");
 
     return {
       status: "success",

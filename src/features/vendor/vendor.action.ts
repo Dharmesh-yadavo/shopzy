@@ -1,12 +1,12 @@
-"use server"; // CRITICAL: Required for Server Actions
+"use server";
 
 import prisma from "@/lib/prisma";
-import { getCurrentUser } from "../auth/server/auth.queries";
 import {
   vendorUpdateDetailsData,
   vendorUpdateDetailsSchema,
 } from "./vendor.schema";
-// Ensure file extension matches
+import { getCurrentUser } from "../auth/auth.queries";
+import { revalidatePath } from "next/cache";
 
 export const EditVendorDetailsAction = async (
   data: vendorUpdateDetailsData,
@@ -43,9 +43,10 @@ export const EditVendorDetailsAction = async (
         gstNumber,
         verificationStatus: "pending",
         requestedAt: new Date(),
-        // Note: Ensure your Prisma schema has these fields!
       },
     });
+
+    revalidatePath("/vendor");
 
     return {
       status: "success",
