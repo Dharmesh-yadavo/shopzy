@@ -2,6 +2,8 @@
 
 import prisma from "@/lib/prisma";
 import {
+  VendorProfileData,
+  VendorProfileSchema,
   vendorUpdateDetailsData,
   vendorUpdateDetailsSchema,
 } from "./vendor.schema";
@@ -51,6 +53,47 @@ export const EditVendorDetailsAction = async (
     return {
       status: "success",
       message: "Vendor details updated successfully.",
+    };
+  } catch (error) {
+    console.error("Vendor details update Error:", error);
+    return {
+      status: "error",
+      message: "Unknown Error Occurred! Please Try Again Later",
+    };
+  }
+};
+
+export const vendorProfileEditAction = async (data: VendorProfileData) => {
+  try {
+    const result = VendorProfileSchema.safeParse(data);
+
+    if (!result.success) {
+      return {
+        status: "error",
+        message: result.error.issues[0].message || "Validation failed",
+      };
+    }
+
+    const { shopName, shopAddress, gstNumber, phone, email, image } =
+      result.data;
+
+    await prisma.user.update({
+      where: { email },
+      data: {
+        shopName,
+        shopAddress,
+        gstNumber,
+        phone,
+        image,
+        updatedAt: new Date(),
+      },
+    });
+
+    revalidatePath("/vendor");
+
+    return {
+      status: "success",
+      message: "Vendor profile updated successfully.",
     };
   } catch (error) {
     console.error("Vendor details update Error:", error);

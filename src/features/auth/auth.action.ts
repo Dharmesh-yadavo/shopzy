@@ -9,7 +9,7 @@ import {
   updatePhoneAndRoleSchema,
 } from "./auth.schema";
 import { getCurrentUser } from "./auth.queries";
-import { signIn } from "@/lib/auth";
+import { signIn, signOut } from "@/lib/auth";
 import { revalidatePath } from "next/cache";
 
 export const RegisterUserAction = async (data: RegisterUserData) => {
@@ -102,4 +102,9 @@ export const EditPhoneAndRoleAction = async (data: UpdatePhoneAndRoleData) => {
       message: "Unknown Error Occurred! Please Try Again Later",
     };
   }
+};
+
+export const handleUserLogoutAction = async () => {
+  // This destroys the session on the server side
+  await signOut({ redirectTo: "/login" });
 };

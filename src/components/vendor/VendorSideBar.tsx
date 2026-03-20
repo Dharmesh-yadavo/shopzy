@@ -10,15 +10,26 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { usePathname } from "next/navigation";
 import {
+  ChevronsUpDown,
   ClipboardList,
   LayoutDashboard,
+  LogOut,
   LucideIcon,
   Package,
-  Settings,
+  User,
 } from "lucide-react";
+import Link from "next/link";
+import { handleUserLogoutAction } from "@/features/auth/auth.action";
 
 export interface SidebarItem {
   title: string;
@@ -26,7 +37,14 @@ export interface SidebarItem {
   icon: LucideIcon;
 }
 
-export const VendorSidebar = () => {
+interface UserDataType {
+  name: string;
+  email: string;
+  role: "admin" | "vendor" | "user";
+  image: string | null;
+}
+
+export const VendorSidebar = ({ user }: { user: UserDataType }) => {
   const pathName = usePathname();
 
   const items: SidebarItem[] = [
@@ -45,14 +63,13 @@ export const VendorSidebar = () => {
       url: "/vendor/orders",
       icon: ClipboardList,
     },
-    {
-      title: "Settings",
-      url: "/vendor/settings",
-      icon: Settings,
-    },
   ];
 
   const layoutName: string = "Vendor Dashboard";
+
+  const handleLogout = async () => {
+    return await handleUserLogoutAction();
+  };
 
   return (
     <Sidebar className="border-r border-zinc-800 bg-black text-zinc-400">
@@ -106,20 +123,74 @@ export const VendorSidebar = () => {
       {/* will have to pass details here  */}
 
       <SidebarFooter className="p-4">
-        <div className="flex items-center gap-3 px-3 py-3 bg-zinc-900/50 rounded-xl border border-zinc-800/50">
-          <Avatar className="h-10 w-10 border-2 border-amber-400/20">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback className="bg-amber-400 text-black font-bold">
-              AS
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col overflow-hidden">
-            <span className="text-sm font-bold text-white truncate">
-              Alex Sterling
-            </span>
-            <span className="text-xs text-zinc-500 truncate">Super Admin</span>
-          </div>
-        </div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <SidebarMenuButton
+                  variant="default"
+                  size="lg"
+                  className="w-full flex items-center gap-3 p-3 rounded-xl border border-zinc-800/50 bg-zinc-900/30 hover:bg-zinc-800/50 hover:border-amber-400/20 transition-all duration-300 group"
+                >
+                  <Avatar className="h-9 w-9 border border-zinc-700 group-hover:border-amber-400/50 transition-colors">
+                    <AvatarImage
+                      src={user?.image || "https://github.com/shadcn.png"}
+                    />
+                    <AvatarFallback className="bg-amber-400 text-black font-bold text-xs">
+                      {user?.name?.substring(0, 2).toUpperCase() || "VD"}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="flex flex-col flex-1 text-left overflow-hidden">
+                    <span className="text-sm font-bold text-zinc-100 truncate group-hover:text-amber-400 transition-colors">
+                      {user?.name || "Alex Sterling"}
+                    </span>
+                    <span className="text-[10px] text-zinc-500 font-medium uppercase tracking-wider truncate">
+                      {user?.role || "Vendor"}
+                    </span>
+                  </div>
+
+                  <ChevronsUpDown className="size-4 text-zinc-500 group-hover:text-amber-400 transition-colors" />
+                </SidebarMenuButton>
+              </DropdownMenuTrigger>
+
+              <DropdownMenuContent
+                side="right"
+                align="end"
+                sideOffset={12}
+                className="w-56 bg-zinc-950 border-zinc-800 text-zinc-300 p-2 shadow-2xl rounded-xl"
+              >
+                <div className="px-2 py-2 mb-1">
+                  <p className="text-xs font-semibold text-zinc-500 uppercase tracking-widest">
+                    Account
+                  </p>
+                  <p className="text-sm text-zinc-100 truncate mt-1">
+                    {user?.email || "alex@sterling.com"}
+                  </p>
+                </div>
+
+                <DropdownMenuSeparator className="bg-zinc-800" />
+
+                <Link href="/vendor/profile">
+                  <DropdownMenuItem className="flex items-center gap-3 py-3 px-3 rounded-lg focus:bg-amber-400/10 focus:text-amber-400 cursor-pointer transition-colors group">
+                    <User className="size-4 text-zinc-500 group-focus:text-amber-400" />
+                    <span className="font-medium">Profile </span>
+                  </DropdownMenuItem>
+                </Link>
+
+                <DropdownMenuSeparator className="bg-zinc-800" />
+
+                <DropdownMenuItem
+                  className="flex items-center gap-3 py-3 px-3 rounded-lg focus:bg-red-500/10 focus:text-red-500 cursor-pointer transition-colors group text-red-400"
+                  onClick={() => handleLogout()}
+                >
+                  <LogOut className="size-4" />
+                  <span className="font-medium">Sign Out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   );
