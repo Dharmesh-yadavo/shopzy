@@ -11,7 +11,7 @@ const ProductShowcase = () => {
           {[
             { name: "Electronics", icon: <Watch /> },
             { name: "Fashion", icon: <User /> },
-            { name: "Home Decor", icon: <Heart /> },
+            { name: "Decoration", icon: <Heart /> },
             { name: "Accessories", icon: <Watch /> },
             { name: "Gaming", icon: <Headphones /> },
             { name: "Audio", icon: <Headphones /> },

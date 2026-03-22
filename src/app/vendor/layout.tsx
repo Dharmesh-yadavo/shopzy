@@ -43,7 +43,7 @@ const Vendorlayout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider>
       <VendorSidebar user={user} />
-      <section className="flex-1 flex flex-col min-h-screen overflow-x-hidden p-2">
+      <section className="flex-1 flex flex-col min-h-screen overflow-x-hidden p-1">
         <SidebarTrigger className="hover:bg-amber-400" />
         {children}
       </section>

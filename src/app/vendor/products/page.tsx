@@ -8,9 +8,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Package, Filter, ArrowUpDown } from "lucide-react";
+import { Package, Filter, ArrowUpDown, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { AddProductModal } from "@/components/vendor/AddProductModal";
+import Link from "next/link";
 
 export default function ProductsPage() {
   return (
@@ -23,7 +23,12 @@ export default function ProductsPage() {
               Manage and optimize your store inventory.
             </p>
           </div>
-          <AddProductModal />
+          {/* <AddProductModal /> */}
+          <Link href="/vendor/add-product">
+            <Button className="bg-amber-400 hover:bg-amber-300 text-black font-bold h-12 px-6 rounded-xl transition-all shadow-lg shadow-amber-400/10">
+              <Plus className="mr-2 h-5 w-5 stroke-[3px]" /> Add Product
+            </Button>
+          </Link>
         </div>
 
         {/* Filter Bar matching the reference UI */}

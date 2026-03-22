@@ -9,6 +9,7 @@ import {
 } from "./vendor.schema";
 import { getCurrentUser } from "../auth/auth.queries";
 import { revalidatePath } from "next/cache";
+import { AddProductType } from "@/components/vendor/AddProductPage";
 
 export const EditVendorDetailsAction = async (
   data: vendorUpdateDetailsData,
@@ -101,5 +102,44 @@ export const vendorProfileEditAction = async (data: VendorProfileData) => {
       status: "error",
       message: "Unknown Error Occurred! Please Try Again Later",
     };
+  }
+};
+
+export const addProductAction = async (
+  data: AddProductType,
+  vendorId: string,
+) => {
+  try {
+    const product = await prisma.product.create({
+      data: {
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        price: parseInt(data.price),
+        stock: parseInt(data.stock),
+        // images: data.images.filter((img: string) => img !== ""),
+        images: data.images,
+        vendorId: vendorId,
+        hasColours: data.hasColours,
+        isWearable: data.isWearable,
+        freeDelivery: data.freeDelivery,
+        payOnDelivery: data.payOnDelivery,
+        size: data.size
+          ? data.size.split(",").map((s: string) => s.trim())
+          : [],
+        variants: data.variants,
+        detailsPoints: data.detailsPoints,
+        warranty: data.warranty || "No Warranty",
+        replacementDays: data.replacementDays || 0,
+        verificationStatus: "pending",
+        createdAt: new Date(),
+      },
+    });
+    console.log("Product: ", product);
+    revalidatePath("/vendor/products");
+    return { success: true, id: product.id };
+  } catch (error) {
+    console.error("PRISMA_CREATE_ERROR:", error);
+    return { success: false, error: "Database connection failed" };
   }
 };

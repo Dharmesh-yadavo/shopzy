@@ -1,10 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -15,13 +8,13 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
   name      String
-  email     String   @unique
-  password  String? // Optional only if using OAuth
+  email     String  @unique
+  password  String? 
   phone     String?  
   image     String?
-  role      Role     @default(user)
+  role      Role    @default(user)
 
   // Vendor Fields
   shopName           String?
@@ -33,11 +26,77 @@ model User {
   approvedAt         DateTime?
   rejectedReason     String?
 
-  cart      CartItem[]
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  // Relationships
+  products    Product[]    // A vendor can have many products
+  cart        CartItem[]
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
 
   @@map("users")
+}
+
+model CartItem {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String  @db.ObjectId
+  user      User    @relation(fields: [userId], references: [id])
+  productId String  @db.ObjectId
+  quantity  Int     @default(1)
+}
+
+
+model Product {
+  id               String   @id @default(auto()) @map("_id") @db.ObjectId
+  title            String
+  description      String
+  price            Int
+  stock            Int
+  isStockAvailable Int?
+
+  // Relationship to Vendor (User model)
+  vendorId         String   @db.ObjectId
+  vendor           User     @relation(fields: [vendorId], references: [id])
+
+  images           String[] 
+
+  hasColours       Boolean
+  variants         ProductVariant[]
+
+  category         String
+  isWearable       Boolean
+  size             String[] 
+
+  verificationStatus VerificationStatus @default(pending)
+  requestedAt        DateTime?
+  approvedAt         DateTime?
+  rejectedReason     String?
+
+  isActive           Boolean? @default(false)
+
+  replacementDays    Int?  @default(0)
+  freeDelivery       Boolean? @default(false)
+  warranty           String?  @default("No Warranty")
+  payOnDelivery      Boolean? @default(false)
+
+  detailsPoints      String[]
+  reviews            ReviewItem[]
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt 
+
+}
+
+type ProductVariant {
+  colorName String
+  imageUrl  String
+}
+
+type ReviewItem {
+  userId    String    @db.ObjectId
+  rating    Int
+  comment   String?
+  image     String?
+  createdAt DateTime? @default(now())
 }
 
 enum Role {
@@ -51,9 +110,3 @@ enum VerificationStatus {
   approved
   rejected
 }
-
-type CartItem {
-  product String @db.ObjectId
-  quantity Int
-}
-
