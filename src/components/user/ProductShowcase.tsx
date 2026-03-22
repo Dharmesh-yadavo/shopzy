@@ -1,8 +1,61 @@
-import React from "react";
-import Image from "next/image";
-import { Headphones, Heart, ShoppingCart, User, Watch } from "lucide-react";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Headphones, Heart, User, Watch } from "lucide-react";
+import { ProductCard } from "./ProductCard";
+import { Product } from "@prisma/client";
 
-const ProductShowcase = () => {
+const TRENDING_PRODUCTS = [
+  {
+    id: "1",
+    brand: "Timepiece Co.",
+    title: "Arctic White Edition",
+    price: 249,
+    rating: 4.9,
+    tag: "Top Rated",
+    image: "/watch.jpg",
+  },
+  {
+    id: "2",
+    brand: "Audio Master",
+    title: "Studio V2 Wireless",
+    price: 399,
+    rating: 4.8,
+    image: "/headphones.jpg",
+  },
+  {
+    id: "3",
+    brand: "Elite Gear",
+    title: "Nitro Speed Runner",
+    price: 120,
+    oldPrice: 150,
+    rating: 4.7,
+    tag: "Sale 20%",
+    image: "/shoes.jpg",
+  },
+  {
+    id: "4",
+    brand: "Optics Lab",
+    title: "Vintage Capture M1",
+    price: 899,
+    rating: 5.0,
+    image: "/camera.jpg",
+  },
+  {
+    id: "5",
+    brand: "Tech Edge",
+    title: "Smart Vision Pro",
+    price: 550,
+    rating: 4.9,
+    image: "/vr.jpg",
+  },
+];
+
+const ProductShowcase = ({ product }: { product: Product[] }) => {
   return (
     <>
       {/* Categories */}
@@ -31,34 +84,40 @@ const ProductShowcase = () => {
           ))}
         </div>
 
-        {/* Product Grid (Simplified Example) */}
-        <div className="px-8 py-12">
-          <h3 className="text-xl font-bold mb-8">Trending Now</h3>
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            {/* Card instance */}
-            <div className="bg-[#111] rounded-2xl p-4 border border-stone-800 group cursor-pointer">
-              <div className="h-64 bg-stone-900 rounded-xl mb-4 overflow-hidden relative">
-                <Image
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0TcTTVs1402dU_bVQ8RbBnlDwmxMtpqioGfkGZVH9BC8whg2QBXxAI38V0zIkw3YzPOlsTvVx8uHxyTWQnAwZIqtnJpO-sKMQKDfhn4kxAQi9Vw4SfO3qp03l55jaAdnskSIcXzYsThBiuy4Id9ieqyr3SgBZXRkKonrpl-DlMs_8ujzOF-tcjRESiwOt7wsIEDwvv_wlP7x1ZY6JLYRlt7-uW508uZATUQSYufTOEmW0YijGG24h1L5PqN1QKHDEnGeqiEy51bFs"
-                  alt="Arctic White Edition product"
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform"
-                />
-                <button className="absolute bottom-3 right-3 bg-yellow-400 p-2 rounded-lg text-black">
-                  <ShoppingCart size={18} />
-                </button>
+        <div className="bg-black py-16 px-6 sm:px-12">
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+            className="w-full max-w-7xl mx-auto"
+          >
+            <div className="flex justify-between items-end mb-10">
+              <div>
+                <h2 className="text-white text-3xl font-bold tracking-tight">
+                  Trending Now
+                </h2>
+                <div className="h-1 w-12 bg-amber-400 mt-2 rounded-full" />
               </div>
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-[8px] uppercase text-yellow-400 font-black mb-1">
-                    Timepiece 02
-                  </p>
-                  <h4 className="font-bold text-sm">Arctic White Edition</h4>
-                </div>
-                <p className="font-bold text-sm">$249.00</p>
+
+              {/* CUSTOM ARROW PLACEMENT */}
+              <div className="flex gap-2 relative">
+                <CarouselPrevious className="static translate-y-0 h-10 w-10 border-zinc-800 bg-zinc-900 text-white hover:bg-amber-400 hover:text-black transition-all" />
+                <CarouselNext className="static translate-y-0 h-10 w-10 border-zinc-800 bg-zinc-900 text-white hover:bg-amber-400 hover:text-black transition-all" />
               </div>
             </div>
-          </div>
+
+            <CarouselContent className="-ml-4">
+              {product.map((prod) => (
+                <CarouselItem
+                  key={prod.id}
+                  className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                >
+                  <ProductCard product={prod} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+          </Carousel>
         </div>
       </section>
     </>
