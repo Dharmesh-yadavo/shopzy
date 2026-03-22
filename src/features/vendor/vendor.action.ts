@@ -9,7 +9,7 @@ import {
 } from "./vendor.schema";
 import { getCurrentUser } from "../auth/auth.queries";
 import { revalidatePath } from "next/cache";
-import { AddProductType } from "@/components/vendor/AddProductPage";
+import { ProductType } from "@/components/vendor/AddProductPage";
 
 export const EditVendorDetailsAction = async (
   data: vendorUpdateDetailsData,
@@ -105,28 +105,22 @@ export const vendorProfileEditAction = async (data: VendorProfileData) => {
   }
 };
 
-export const addProductAction = async (
-  data: AddProductType,
-  vendorId: string,
-) => {
+export const addProductAction = async (data: ProductType, vendorId: string) => {
   try {
     const product = await prisma.product.create({
       data: {
         title: data.title,
         description: data.description,
         category: data.category,
-        price: parseInt(data.price),
-        stock: parseInt(data.stock),
-        // images: data.images.filter((img: string) => img !== ""),
+        price: data.price,
+        stock: data.stock,
         images: data.images,
         vendorId: vendorId,
         hasColours: data.hasColours,
-        isWearable: data.isWearable,
+        isWearable: data.isWearable || false,
         freeDelivery: data.freeDelivery,
         payOnDelivery: data.payOnDelivery,
-        size: data.size
-          ? data.size.split(",").map((s: string) => s.trim())
-          : [],
+        size: data.size ? data.size.split(",").map((s) => s.trim()) : [],
         variants: data.variants,
         detailsPoints: data.detailsPoints,
         warranty: data.warranty || "No Warranty",
@@ -141,5 +135,62 @@ export const addProductAction = async (
   } catch (error) {
     console.error("PRISMA_CREATE_ERROR:", error);
     return { success: false, error: "Database connection failed" };
+  }
+};
+
+export const updateProductAction = async (
+  productId: string,
+  data: ProductType,
+  vendorId: string,
+) => {
+  try {
+    await prisma.product.update({
+      where: { id: productId, vendorId: vendorId },
+      data: {
+        title: data.title,
+        description: data.description,
+        category: data.category,
+        price: data.price,
+        stock: data.stock,
+        images: data.images.filter((img: string) => img !== ""),
+        hasColours: data.hasColours,
+        isWearable: data.isWearable || false,
+        freeDelivery: data.freeDelivery,
+        payOnDelivery: data.payOnDelivery,
+        size: data.size ? data.size.split(",").map((s) => s.trim()) : [],
+        variants: data.variants,
+        detailsPoints: data.detailsPoints,
+        warranty: data.warranty || "No Warranty",
+        replacementDays: data.replacementDays || 0,
+        verificationStatus: "pending",
+        updatedAt: new Date(),
+      },
+    });
+
+    revalidatePath("/vendor/products");
+    return { success: true };
+  } catch (error) {
+    console.error("UPDATE_ERROR:", error);
+    return { success: false, error: "Update failed" };
+  }
+};
+
+export const toggleProductStatusAction = async (
+  productId: string,
+  currentStatus: boolean | null,
+) => {
+  try {
+    await prisma.product.update({
+      where: { id: productId },
+      data: {
+        isActive: !currentStatus,
+      },
+    });
+
+    revalidatePath("/vendor/products");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false, error: "Failed to update visibility" };
   }
 };

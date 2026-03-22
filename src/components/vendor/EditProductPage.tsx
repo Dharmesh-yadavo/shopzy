@@ -18,34 +18,23 @@ import { toast } from "sonner";
 import uploadOnCloudiinary from "@/lib/cloudinary";
 import Image from "next/image";
 import Link from "next/link";
-import { addProductAction } from "@/features/vendor/vendor.action";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { Product } from "@prisma/client";
+import { updateProductAction } from "@/features/vendor/vendor.action";
+import { ProductType } from "./AddProductPage";
 
-export interface ProductType {
-  id?: string;
-  vendorId?: string;
-  title: string;
-  price: number;
-  stock: number;
-  category: string;
-  description: string;
-  isWearable: boolean | null;
-  size: string;
-  hasColours: boolean;
-  replacementDays: number | null;
-  warranty: string | null;
-  freeDelivery: boolean | null;
-  payOnDelivery: boolean | null;
-  images: string[];
-  variants: {
-    colorName: string;
-    imageUrl: string;
-  }[];
-  detailsPoints: string[];
-}
-
-export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
+export const EditProductPage = ({
+  productId,
+  product,
+  vendorId,
+}: {
+  productId: string;
+  product: Product;
+  vendorId: string;
+}) => {
   const [isUploading, setIsUploading] = useState<string | null>(null);
+
+  const router = useRouter();
 
   const {
     register,
@@ -53,25 +42,24 @@ export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
     setValue,
     watch,
     control,
-    reset,
     formState: { isSubmitting },
   } = useForm({
     defaultValues: {
-      title: "",
-      price: 0,
-      stock: 0,
-      category: "",
-      description: "",
-      isWearable: false,
-      size: "",
-      hasColours: false,
-      replacementDays: 0,
-      warranty: "",
-      freeDelivery: false,
-      payOnDelivery: false,
-      images: ["", "", "", ""],
-      variants: [] as { colorName: string; imageUrl: string }[],
-      detailsPoints: [] as string[],
+      title: product.title,
+      price: product.price,
+      stock: product.stock,
+      category: product.category,
+      description: product.description,
+      isWearable: product.isWearable,
+      size: product.size?.join(", ") || "",
+      hasColours: product.hasColours,
+      replacementDays: product.replacementDays,
+      warranty: product.warranty,
+      freeDelivery: product.freeDelivery,
+      payOnDelivery: product.payOnDelivery,
+      images: [...product.images, ...Array(4 - product.images.length).fill("")],
+      variants: product.variants || [],
+      detailsPoints: product.detailsPoints || [],
     },
   });
 
@@ -79,7 +67,11 @@ export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
     fields: variantFields,
     append: addVariant,
     remove: removeVariant,
-  } = useFieldArray({ control, name: "variants" });
+  } = useFieldArray({
+    control,
+    name: "variants",
+  });
+
   const watchedImages = watch("images");
   const points = watch("detailsPoints");
   const [pointInput, setPointInput] = useState("");
@@ -109,10 +101,14 @@ export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
   };
 
   const onSubmit = async (data: ProductType) => {
-    console.log("Final Data:", data);
-    await addProductAction(data, vendorId);
-    reset();
-    redirect("/vendor/products");
+    const res = await updateProductAction(productId, data, vendorId);
+    if (res.success) {
+      toast.success("Product Updated!");
+      router.push("/vendor/products");
+      router.refresh();
+    } else {
+      toast.error("Update failed");
+    }
   };
 
   const category = [
@@ -126,79 +122,74 @@ export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
   ];
 
   return (
-    <div className="max-w-325 text-zinc-100 font-sans p-4 min-h-screen">
-      {/* HEADER SECTION */}
-      <div className="flex gap-4 pb-5">
+    <div className="max-w-325 text-zinc-100 p-4 min-h-screen">
+      <div className="flex items-center gap-4 pb-5">
         <Link href="/vendor/products">
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-full hover:bg-amber-400"
+            className="rounded-full hover:bg-zinc-800"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft />
           </Button>
         </Link>
+        <h1 className="text-xl font-bold">Edit {product.title}</h1>
       </div>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="grid grid-cols-1 lg:grid-cols-12 gap-12"
       >
-        {/* LEFT SIDE: FORM FIELDS */}
         <div className="lg:col-span-7 space-y-8">
-          {/* Main Inputs */}
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <Input
-                {...register("title")}
-                placeholder="Product Name"
-                className="bg-[#111113] border-zinc-800 h-12 rounded-xl focus:border-amber-400 transition-all"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Select onValueChange={(v) => setValue("category", v)}>
-                <SelectTrigger className="bg-[#111113] w-full p-6 border-zinc-800 h-12 rounded-xl text-zinc-400 focus:ring-0 focus:ring-offset-0 focus:border-amber-400 px-4">
-                  <SelectValue placeholder="Category" />
-                </SelectTrigger>
-                <SelectContent className="bg-[#1c1b1b] border-zinc-800 text-zinc-200">
-                  {category.map((cat) => (
-                    <SelectItem
-                      key={cat.name}
-                      value={cat.name.toLowerCase()}
-                      className="focus:bg-amber-400 focus:text-black cursor-pointer capitalize"
-                    >
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            <Input
+              {...register("title")}
+              placeholder="Product Name"
+              className="bg-[#111113] border-zinc-800 h-12 rounded-xl"
+            />
+            <Select
+              defaultValue={product.category}
+              onValueChange={(v) => setValue("category", v)}
+            >
+              <SelectTrigger className="bg-[#111113] w-full p-6 border-zinc-800 h-12 rounded-xl text-zinc-400 focus:ring-0 focus:ring-offset-0 focus:border-amber-400 px-4">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent className="bg-[#1c1b1b] text-white">
+                {category.map((cat) => (
+                  <SelectItem
+                    key={cat.name}
+                    value={cat.name.toLowerCase()}
+                    className="focus:bg-amber-400 focus:text-black cursor-pointer capitalize"
+                  >
+                    {cat.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Input
               type="number"
               {...register("price", { valueAsNumber: true })}
-              defaultValue="false"
-              placeholder="Price (₹)"
-              className="bg-[#111113] border-zinc-800 h-12 rounded-xl"
+              placeholder="Price"
+              className="bg-[#111113] border-zinc-800 h-12"
             />
             <Input
               type="number"
               {...register("stock", { valueAsNumber: true })}
               placeholder="Stock"
-              className="bg-[#111113] border-zinc-800 h-12 rounded-xl"
+              className="bg-[#111113] border-zinc-800 h-12"
             />
           </div>
 
           <Textarea
             {...register("description")}
-            placeholder="Description..."
-            className="bg-[#111113] border-zinc-800 h-32 rounded-xl resize-none p-4"
+            className="bg-[#111113] border-zinc-800 h-32"
           />
 
           {/* CHECKBOX GRID */}
           <div className="grid grid-cols-2 gap-x-8 gap-y-4 p-5 bg-[#111113] rounded-2xl border border-zinc-800/50">
             <label className="flex items-center gap-3 text-sm font-medium cursor-pointer group">
               <Checkbox
-                checked={watch("isWearable")}
+                checked={!!watch("isWearable")}
                 onCheckedChange={(v) => setValue("isWearable", !!v)}
                 className="w-5 h-5 border-zinc-700 data-[state=checked]:bg-amber-400 data-[state=checked]:border-amber-400 data-[state=checked]:text-black"
               />
@@ -206,7 +197,7 @@ export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
             </label>
             <label className="flex items-center gap-3 text-sm font-medium cursor-pointer group">
               <Checkbox
-                checked={watch("hasColours")}
+                checked={!!watch("hasColours")}
                 onCheckedChange={(v) => setValue("hasColours", !!v)}
                 className="w-5 h-5 border-zinc-700 data-[state=checked]:bg-amber-400 data-[state=checked]:border-amber-400 data-[state=checked]:text-black"
               />
@@ -214,7 +205,7 @@ export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
             </label>
             <label className="flex items-center gap-3 text-sm font-medium cursor-pointer group ">
               <Checkbox
-                checked={watch("freeDelivery")}
+                checked={!!watch("freeDelivery")}
                 onCheckedChange={(v) => setValue("freeDelivery", !!v)}
                 className="w-5 h-5 border-zinc-700 data-[state=checked]:bg-amber-400 data-[state=checked]:border-amber-400 data-[state=checked]:text-black"
               />
@@ -222,7 +213,7 @@ export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
             </label>
             <label className="flex items-center gap-3 text-sm font-medium cursor-pointer group ">
               <Checkbox
-                checked={watch("payOnDelivery")}
+                checked={!!watch("payOnDelivery")}
                 onCheckedChange={(v) => setValue("payOnDelivery", !!v)}
                 className="w-5 h-5 border-zinc-700 data-[state=checked]:bg-amber-400 data-[state=checked]:border-amber-400 data-[state=checked]:text-black"
               />
@@ -387,7 +378,7 @@ export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
               Detail Points
             </p>
             <div className="flex flex-wrap gap-2 min-h-10 w-full items-start transition-all overflow-hidden">
-              {points.map((p, i) => (
+              {points.map((p: string, i: number) => (
                 <div
                   key={i}
                   className="text-xs bg-zinc-900 border border-zinc-800 px-3 py-1.5 rounded-xl flex items-center justify-between gap-2 text-zinc-300 animate-in zoom-in-95 duration-200 max-w-full"
@@ -399,7 +390,7 @@ export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
                     onClick={() =>
                       setValue(
                         "detailsPoints",
-                        points.filter((_, idx) => idx !== i),
+                        points.filter((_: string, idx: number) => idx !== i),
                       )
                     }
                   />
@@ -444,12 +435,12 @@ export const AddProductPage = ({ vendorId }: { vendorId: string }) => {
 
           <Button
             disabled={isSubmitting}
-            className="w-full bg-amber-300 hover:bg-amber-400 text-black font-bold h-12 rounded-2xl shadow-xl shadow-amber-400/10 text-sm transition-all active:scale-[0.98]"
+            className="w-full bg-amber-400 text-black font-bold h-12 rounded-2xl hover:bg-amber-300"
           >
             {isSubmitting ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
+              <Loader2 className="animate-spin" />
             ) : (
-              "Save Product Listing"
+              "Update Product"
             )}
           </Button>
         </div>

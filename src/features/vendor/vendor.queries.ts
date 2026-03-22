@@ -30,3 +30,30 @@ export const getAllVendors = async () => {
     return [];
   }
 };
+
+export const getAllProduct = async (vendorId: string) => {
+  try {
+    const products = await prisma.product.findMany({
+      where: { vendorId },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    console.log("All Products: ", products);
+    return products;
+  } catch {
+    return [];
+  }
+};
+
+export const productById = async (productId: string) => {
+  try {
+    const [products] = await prisma.product.findMany({
+      where: { id: productId },
+    });
+    return products;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
