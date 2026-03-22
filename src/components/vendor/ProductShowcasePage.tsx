@@ -21,6 +21,7 @@ import Image from "next/image";
 import { Product } from "@prisma/client";
 import { redirect } from "next/navigation";
 import { toggleProductStatusAction } from "@/features/vendor/vendor.action";
+import { toast } from "sonner";
 
 interface ProductShowcaseProps {
   products: Product[];
@@ -29,6 +30,20 @@ interface ProductShowcaseProps {
 export const ProductShowcasePage = ({
   products = [],
 }: ProductShowcaseProps) => {
+  //
+  const handleIsActiveButton = async (
+    productId: string,
+    verificationStatus: "pending" | "approved" | "rejected",
+    isActive: boolean | null,
+  ) => {
+    console.log("handleIsActiveButton ", verificationStatus, " ", isActive);
+    if (verificationStatus === "pending") {
+      toast.error("Product is not approved by Admin.");
+    } else {
+      await toggleProductStatusAction(productId, isActive);
+    }
+  };
+  //
   return (
     <div className="min-h-screen flex flex-row flex-1 w-full bg-black/10 text-white">
       <div className="px-6 py-6 space-y-6 w-full">
@@ -101,17 +116,23 @@ export const ProductShowcasePage = ({
                   >
                     {/* IMAGE CELL */}
                     <TableCell className="py-6 px-8">
-                      <div className="h-16 w-16 rounded-xl bg-zinc-800 border border-zinc-700 relative overflow-hidden flex items-center justify-center transition-transform group-hover:scale-105">
-                        {product.images?.[0] ? (
-                          <Image
-                            src={product.images[0]}
-                            alt={product.title}
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          <Package className="h-7 w-7 text-zinc-600 group-hover:text-amber-400" />
-                        )}
+                      <div className="group relative">
+                        {/* Fixed 1:1 Aspect Ratio Container */}
+                        <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-zinc-900 border border-zinc-700 transition-all duration-300 group-hover:border-amber-400 group-hover:shadow-sm">
+                          {product.images?.[0] ? (
+                            <Image
+                              src={product.images[0]}
+                              alt={product.title}
+                              width={100}
+                              height={100}
+                              className="object-cover transition-transform duration-500 group-hover:scale-110"
+                            />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center bg-zinc-800">
+                              <Package className="h-7 w-7 text-zinc-600 group-hover:text-amber-400" />
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </TableCell>
 
@@ -198,8 +219,9 @@ export const ProductShowcasePage = ({
                             variant="ghost"
                             size="sm"
                             onClick={() =>
-                              toggleProductStatusAction(
+                              handleIsActiveButton(
                                 product.id,
+                                product.verificationStatus,
                                 product.isActive,
                               )
                             }
@@ -217,8 +239,9 @@ export const ProductShowcasePage = ({
                             variant="ghost"
                             size="sm"
                             onClick={() =>
-                              toggleProductStatusAction(
+                              handleIsActiveButton(
                                 product.id,
+                                product.verificationStatus,
                                 product.isActive,
                               )
                             }
