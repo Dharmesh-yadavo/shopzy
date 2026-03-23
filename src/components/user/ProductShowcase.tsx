@@ -9,52 +9,6 @@ import { Headphones, Heart, User, Watch } from "lucide-react";
 import { ProductCard } from "./ProductCard";
 import { Product } from "@prisma/client";
 
-const TRENDING_PRODUCTS = [
-  {
-    id: "1",
-    brand: "Timepiece Co.",
-    title: "Arctic White Edition",
-    price: 249,
-    rating: 4.9,
-    tag: "Top Rated",
-    image: "/watch.jpg",
-  },
-  {
-    id: "2",
-    brand: "Audio Master",
-    title: "Studio V2 Wireless",
-    price: 399,
-    rating: 4.8,
-    image: "/headphones.jpg",
-  },
-  {
-    id: "3",
-    brand: "Elite Gear",
-    title: "Nitro Speed Runner",
-    price: 120,
-    oldPrice: 150,
-    rating: 4.7,
-    tag: "Sale 20%",
-    image: "/shoes.jpg",
-  },
-  {
-    id: "4",
-    brand: "Optics Lab",
-    title: "Vintage Capture M1",
-    price: 899,
-    rating: 5.0,
-    image: "/camera.jpg",
-  },
-  {
-    id: "5",
-    brand: "Tech Edge",
-    title: "Smart Vision Pro",
-    price: 550,
-    rating: 4.9,
-    image: "/vr.jpg",
-  },
-];
-
 const ProductShowcase = ({ product }: { product: Product[] }) => {
   return (
     <>
