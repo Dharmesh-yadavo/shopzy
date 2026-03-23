@@ -93,6 +93,7 @@ type ProductVariant {
 
 type ReviewItem {
   userId    String    @db.ObjectId
+  userName  String    
   rating    Int
   comment   String?
   image     String?

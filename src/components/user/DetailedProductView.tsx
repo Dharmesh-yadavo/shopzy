@@ -7,30 +7,32 @@ import {
   ShieldCheck,
   Truck,
   MapPin,
-  CalendarCheck,
-  Store,
+  ThumbsUp,
+  Flag,
+  CheckCircle2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "../ui/badge";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 interface Vendor {
   id: string;
   name: string;
   email: string;
-  phone: string;
-  image: string;
-  shopName: string;
-  shopAddress: string;
-  gstNumber: string;
-  isApproved: boolean;
-  verificationStatus: string;
-  requestedAt: Date | string;
-  approvedAt: Date | string | null;
+  phone: string | null;
+  image: string | null;
+  shopName: string | null;
+  shopAddress: string | null;
+  gstNumber: string | null;
+  isApproved: boolean | null;
+  verificationStatus: "pending" | "approved" | "rejected";
+  requestedAt: Date | null;
+  approvedAt: Date | null;
   rejectedReason: string | null;
-  createdAt: Date | string;
+  createdAt: Date;
 }
 
 export const DetailedProductView = ({
@@ -50,7 +52,7 @@ export const DetailedProductView = ({
     setCount((prev) => (prev > 1 ? prev - 1 : 1));
   };
 
-  console.log("Vendorssss: ", vendor);
+  console.log("Reviews : ", product.reviews);
 
   const handleCountIncrement = () => {
     if (count >= product.stock) {
@@ -65,6 +67,54 @@ export const DetailedProductView = ({
       setCount((prev) => prev + 1);
     }
   };
+
+  const totalStars = product.reviews.reduce(
+    (acc, review) => acc + review.rating,
+    0,
+  );
+
+  const globalRating =
+    product.reviews.length > 0
+      ? (totalStars / product.reviews.length).toFixed(1)
+      : "0";
+
+  const totalFiveStars = product.reviews.filter(
+    (reviews) => reviews.rating == 5,
+  );
+
+  const totalFourStars = product.reviews.filter(
+    (reviews) => reviews.rating == 4,
+  );
+
+  const totalThreeStars = product.reviews.filter(
+    (reviews) => reviews.rating == 3,
+  );
+
+  const totalTwoStars = product.reviews.filter(
+    (reviews) => reviews.rating == 2,
+  );
+
+  const totalOneStars = product.reviews.filter(
+    (reviews) => reviews.rating == 1,
+  );
+
+  const total =
+    totalFiveStars.length +
+      totalFourStars.length +
+      totalThreeStars.length +
+      totalTwoStars.length +
+      totalOneStars.length || 1;
+
+  const percentageFiveStars =
+    total > 0 ? (totalFiveStars.length / total) * 100 : 0;
+  const percentageFourStars =
+    total > 0 ? (totalFourStars.length / total) * 100 : 0;
+  const percentageThreeStars =
+    total > 0 ? (totalThreeStars.length / total) * 100 : 0;
+  const percentageTwoStars =
+    total > 0 ? (totalTwoStars.length / total) * 100 : 0;
+  const percentageOneStars =
+    total > 0 ? (totalOneStars.length / total) * 100 : 0;
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-400 font-sans py-10 px-6">
@@ -109,13 +159,15 @@ export const DetailedProductView = ({
                   <Star
                     key={i}
                     size={16}
-                    fill={i < 4 ? "currentColor" : "none"}
+                    fill={i < parseInt(globalRating) ? "currentColor" : "none"}
                   />
                 ))}
-                <span className="text-white ml-2 font-semibold">4.8</span>
+                <span className="text-white ml-2 font-semibold">
+                  {globalRating}
+                </span>
               </div>
               <span className="text-zinc-600">|</span>
-              <span className="text-sm">128 Reviews</span>
+              <span className="text-sm">{product.reviews.length} Reviews</span>
               <span className="text-zinc-600">|</span>
               <span className="text-sm">3k+ Sold</span>
             </div>
@@ -195,7 +247,6 @@ export const DetailedProductView = ({
       </div>
 
       {/* Specification area */}
-      {/* --- LOWER CONTENT SECTION --- */}
       <div className="max-w-5xl mx-auto mt-24 space-y-20">
         <Tabs defaultValue="specs" className="w-full">
           <TabsList className="bg-transparent border-b border-zinc-900 w-full justify-start rounded-none h-auto p-0 gap-8">
@@ -290,8 +341,8 @@ export const DetailedProductView = ({
             <div className="bg-[#111] border border-zinc-800 rounded-3xl p-8 flex flex-col md:flex-row gap-8 items-center md:items-start">
               <div className="relative w-24 h-24 rounded-2xl overflow-hidden border border-zinc-800 shrink-0">
                 <Image
-                  src={vendor.image}
-                  alt={vendor.shopName}
+                  src={vendor.image || ""}
+                  alt={vendor.shopName || "vendor_img"}
                   fill
                   className="object-cover"
                 />
@@ -333,33 +384,29 @@ export const DetailedProductView = ({
           </TabsContent>
         </Tabs>
 
-        {/* Customer Reviews Section */}
-        <div className="pt-16 border-t border-zinc-900">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-12">
-            <div>
-              <h2 className="text-3xl font-bold text-white mb-2">
-                Customer Reviews
-              </h2>
-              <p className="text-zinc-500">
-                Real feedback from verified iPhone 17 users
-              </p>
-            </div>
-            <Button className="bg-white text-black hover:bg-zinc-200 font-bold rounded-xl px-8 h-12">
-              Write a Review
-            </Button>
+        {/* --- CUSTOMER REVIEWS SECTION --- */}
+        <div className="pt-10 border-t border-zinc-900">
+          <div className="mb-10">
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Customer Reviews
+            </h2>
+            <p className="text-zinc-500 text-sm">
+              Based on {product.reviews?.length || 0} verified purchases
+            </p>
           </div>
 
-          <div className="flex flex-col md:flex-row gap-16 items-start">
+          <div className="flex flex-col md:flex-row gap-16 items-start mb-16">
+            {/* Left side: Big Rating Score */}
             <div className="shrink-0 text-center md:text-left">
               <div className="text-7xl font-bold text-white mb-2 tracking-tighter">
-                4.8
+                {globalRating}
               </div>
               <div className="flex justify-center md:justify-start text-amber-400 mb-3">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
                     size={18}
-                    fill={i < 4 ? "currentColor" : "none"}
+                    fill={i < parseInt(globalRating) ? "currentColor" : "none"}
                   />
                 ))}
               </div>
@@ -368,28 +415,136 @@ export const DetailedProductView = ({
               </p>
             </div>
 
+            {/* Middle: Rating Progress Bars */}
             <div className="flex-1 space-y-3 max-w-md w-full">
               {[5, 4, 3, 2, 1].map((num) => (
                 <div
                   key={num}
                   className="flex items-center gap-4 text-xs font-medium"
                 >
-                  <span className="text-zinc-500 w-4">{num}</span>
+                  <span className="text-zinc-500 w-4 ">{num} star</span>
                   <div className="flex-1 h-2 bg-zinc-900 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-amber-400 rounded-full transition-all duration-1000"
                       style={{
-                        width: `${num === 5 ? 85 : num === 4 ? 10 : 2}%`,
+                        width: `${num === 5 ? percentageFiveStars : num === 4 ? percentageFourStars : num === 3 ? percentageThreeStars : num === 2 ? percentageTwoStars : percentageOneStars}%`,
                       }}
                     />
                   </div>
-                  <span className="text-zinc-500 w-10 text-right">
-                    {num === 5 ? "85%" : num === 4 ? "10%" : "2%"}
-                  </span>
+                  <div className="">
+                    <span className="text-zinc-500 w-10 text-right">
+                      {Math.round(
+                        num === 5
+                          ? percentageFiveStars
+                          : num === 4
+                            ? percentageFourStars
+                            : num === 3
+                              ? percentageThreeStars
+                              : num === 2
+                                ? percentageTwoStars
+                                : percentageOneStars,
+                      )}
+                    </span>
+                    <span className="pl-0.5">%</span>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
+
+          {/* Right side: Individual Reviews List */}
+          {!product.reviews || product.reviews.length === 0 ? (
+            <div className="bg-[#111] border border-zinc-800 rounded-3xl p-10 text-center">
+              <p className="text-zinc-500">
+                No reviews yet for this model. Be the first to share your
+                experience!
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-12">
+              {product.reviews.map((review, index) => (
+                <div
+                  key={index}
+                  className="group border-b border-zinc-900 pb-10 last:border-0"
+                >
+                  <div className="flex justify-between items-start mb-4">
+                    <div className="flex items-center gap-4">
+                      <Avatar className="h-10 w-10 border border-zinc-800 bg-zinc-900">
+                        <AvatarFallback className="bg-amber-400 text-black font-bold text-xs">
+                          {review.userName
+                            ? review.userName.charAt(0).toUpperCase()
+                            : "U"}
+                        </AvatarFallback>
+                      </Avatar>
+
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-white font-bold text-sm">
+                            {review.userName || "Verified User"}
+                          </h4>
+                          <div className="flex items-center gap-1 text-[10px] text-green-500 font-bold bg-green-500/10 px-2 py-0.5 rounded-full">
+                            <CheckCircle2 size={10} />
+                            Verified Buyer
+                          </div>
+                        </div>
+                        <p className="text-zinc-500 text-[10px] mt-1">
+                          {review.createdAt
+                            ? new Date(review.createdAt).toLocaleDateString(
+                                "en-US",
+                                {
+                                  month: "long",
+                                  day: "numeric",
+                                  year: "numeric",
+                                },
+                              )
+                            : "Recently"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex text-amber-400">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          size={12}
+                          fill={i < review.rating ? "currentColor" : "none"}
+                          strokeWidth={3}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="pl-14 space-y-3">
+                    <h5 className="text-white font-bold text-md leading-snug">
+                      {review.rating >= 4
+                        ? "Excellent Product"
+                        : "Product Feedback"}
+                    </h5>
+                    <p className="text-zinc-400 text-sm leading-relaxed max-w-3xl">
+                      {review.comment ||
+                        "Great purchase, highly satisfied with the performance."}
+                    </p>
+
+                    {/* Action Buttons */}
+                    <div className="flex items-center gap-6 pt-4 text-zinc-600">
+                      <button className="flex items-center gap-2 text-xs hover:text-white transition-colors">
+                        <ThumbsUp size={14} />
+                        Helpful
+                      </button>
+                      <button className="flex items-center gap-2 text-xs hover:text-white transition-colors">
+                        <Flag size={14} />
+                        Report
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              <button className="text-amber-400 font-bold text-sm flex items-center gap-2 hover:underline pt-4">
+                View all {product.reviews.length} reviews →
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

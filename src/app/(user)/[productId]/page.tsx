@@ -16,7 +16,9 @@ const productDetailedPage = async ({ params }: PageProps) => {
 
   const vendor = await vendorById(details.vendorId);
 
-  console.log("Vendor: ", vendor);
+  if (!vendor) {
+    return <div>Vendor information not found</div>;
+  }
 
   return <DetailedProductView product={details} vendor={vendor} />;
 };
