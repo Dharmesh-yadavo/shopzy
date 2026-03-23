@@ -60,7 +60,7 @@ export const productById = async (productId: string) => {
 
 export const vendorById = async (vendorId: string) => {
   try {
-    const vendors = await prisma.user.findMany({
+    const [vendors] = await prisma.user.findMany({
       where: { id: vendorId },
       select: {
         id: true,
@@ -82,6 +82,5 @@ export const vendorById = async (vendorId: string) => {
     return vendors;
   } catch (error) {
     console.error(error);
-    return [];
   }
 };
