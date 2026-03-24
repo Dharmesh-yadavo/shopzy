@@ -6,6 +6,7 @@ import { Product } from "@prisma/client";
 import Link from "next/link";
 import { addProductToCart } from "@/features/user/user.action";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export const ProductCard = ({ product }: { product: Product }) => {
   const router = useRouter();
@@ -18,19 +19,18 @@ export const ProductCard = ({ product }: { product: Product }) => {
     e.preventDefault();
     e.stopPropagation();
 
-    let colour = "";
-    let size = "";
-    if (product.hasColours) {
-      product.variants.map((p) => {
-        return (colour = p.colorName);
-      });
-    }
-    if (product.size) {
-      size = product.size[0];
-    }
+    const color =
+      product.hasColours && product.variants.length > 0
+        ? product.variants[0].colorName
+        : undefined;
 
-    const res = await addProductToCart(productId, quantity, colour, size);
+    const size =
+      product.size && product.size.length > 0 ? product.size[0] : undefined;
+
+    const res = await addProductToCart(productId, quantity, color, size);
+
     if (res.status === "success") {
+      toast.success(res.message);
       router.refresh();
     }
   };

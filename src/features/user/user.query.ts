@@ -12,3 +12,18 @@ export const getAllProducts = async () => {
     return [];
   }
 };
+
+export const getAllCartProducts = async (userId: string) => {
+  try {
+    const res = await prisma.cartItem.findMany({
+      where: { userId },
+      include: {
+        product: true,
+      },
+    });
+    return res;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+};
