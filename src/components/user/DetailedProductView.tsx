@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "../ui/badge";
 import { Avatar, AvatarFallback } from "../ui/avatar";
+import { addProductToCart } from "@/features/user/user.action";
 
 interface Vendor {
   id: string;
@@ -47,12 +48,13 @@ export const DetailedProductView = ({
     product.variants[0]?.colorName,
   );
   const [count, setCount] = useState(1);
+  const [selectedSize, setSelectedSize] = useState<string>(
+    product.size[0] || "",
+  );
 
   const handleCountDecrement = () => {
     setCount((prev) => (prev > 1 ? prev - 1 : 1));
   };
-
-  console.log("Reviews : ", product.reviews);
 
   const handleCountIncrement = () => {
     if (count >= product.stock) {
@@ -115,6 +117,24 @@ export const DetailedProductView = ({
     total > 0 ? (totalTwoStars.length / total) * 100 : 0;
   const percentageOneStars =
     total > 0 ? (totalOneStars.length / total) * 100 : 0;
+
+  console.log("Product: ", product);
+
+  const handleCartButton = async (
+    productId: string,
+    quantity: number,
+    color?: string,
+    size?: string,
+  ) => {
+    const res = await addProductToCart(productId, quantity, color, size);
+    if (res.status === "success") {
+      toast.success(res.message);
+    } else {
+      toast.error(res.message);
+    }
+  };
+
+  // const sizes = [S]
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-zinc-400 font-sans py-10 px-6">
@@ -183,29 +203,57 @@ export const DetailedProductView = ({
             </span>
           </div>
 
-          <div className="space-y-3">
-            <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">
-              Color: <span className="text-white">{selectedColor}</span>
-            </p>
-            <div className="flex gap-3">
-              {product.variants.map((variant: ProductVariant) => (
-                <button
-                  key={variant.colorName}
-                  onClick={() => setSelectedColor(variant.colorName)}
-                  className={`rounded-2xl bg-[#111111] border  ${selectedColor === variant.colorName ? "border-2 border-amber-400" : "border-0"}`}
-                  title={variant.colorName}
-                >
-                  <Image
-                    src={variant.imageUrl}
-                    alt={variant.colorName}
-                    width={80}
-                    height={80}
-                    className="object-fit p-2 rounded-xl"
-                  />
-                </button>
-              ))}
+          {product.hasColours ? (
+            <div className="space-y-3">
+              <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">
+                Color: <span className="text-white">{selectedColor}</span>
+              </p>
+              <div className="flex gap-3">
+                {product.variants.map((variant: ProductVariant) => (
+                  <button
+                    key={variant.colorName}
+                    onClick={() => setSelectedColor(variant.colorName)}
+                    className={`rounded-2xl bg-[#111111] border  ${selectedColor === variant.colorName ? "border-2 border-amber-400" : "border-0"}`}
+                    title={variant.colorName}
+                  >
+                    <Image
+                      src={variant.imageUrl}
+                      alt={variant.colorName}
+                      width={80}
+                      height={80}
+                      className="object-fit p-2 rounded-xl"
+                    />
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
+          ) : null}
+
+          {product.size ? (
+            <div className="space-y-3">
+              <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">
+                Size:{" "}
+                <span className="text-white">
+                  {selectedSize || "Select one"}
+                </span>
+              </p>
+              <div className="flex gap-3">
+                {product.size.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => setSelectedSize(s)}
+                    className={`rounded-sm px-4 py-2 transition-all border ${
+                      selectedSize === s
+                        ? "bg-white text-black border-white"
+                        : "bg-[#111111] text-white border-zinc-800 hover:border-zinc-500"
+                    }`}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
 
           <div className="flex gap-4 pt-4">
             <div className="flex items-center bg-zinc-900 rounded-xl px-4 border border-zinc-800">
@@ -228,7 +276,12 @@ export const DetailedProductView = ({
                 +
               </button>
             </div>
-            <Button className="flex-1 bg-amber-400 hover:bg-amber-500 text-black font-bold h-14 rounded-xl text-lg">
+            <Button
+              onClick={() =>
+                handleCartButton(product.id, count, selectedColor, selectedSize)
+              }
+              className="flex-1 bg-amber-400 hover:bg-amber-500 text-black font-bold h-14 rounded-xl text-lg"
+            >
               Add to Cart
             </Button>
           </div>
@@ -298,7 +351,9 @@ export const DetailedProductView = ({
                         Model
                       </TableCell>
                       <TableCell className="text-white text-right py-4 px-6">
-                        {product.title}
+                        {product.title.length > 40
+                          ? `${product.title.slice(0, 40)}....`
+                          : product.title}
                       </TableCell>
                     </TableRow>
                     <TableRow className="hover:bg-transparent border-zinc-800">

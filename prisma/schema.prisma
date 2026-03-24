@@ -42,6 +42,10 @@ model CartItem {
   user      User    @relation(fields: [userId], references: [id])
   productId String  @db.ObjectId
   quantity  Int     @default(1)
+  size      String?
+  color     String?
+
+  @@unique([userId, productId, size, color])
 }
 
 

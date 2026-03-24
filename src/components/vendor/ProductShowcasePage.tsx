@@ -140,7 +140,9 @@ export const ProductShowcasePage = ({
                     <TableCell className="py-6 px-8">
                       <div className="flex flex-col">
                         <span className="font-bold text-lg text-zinc-100 group-hover:text-amber-400 transition-colors line-clamp-1">
-                          {product.title}
+                          {product.title.length > 30
+                            ? `${product.title.slice(0, 30)}....`
+                            : product.title}
                         </span>
                         <span className="text-xs text-zinc-500 mt-1 capitalize">
                           {product.category} • ID:{" "}

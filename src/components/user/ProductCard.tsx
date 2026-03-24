@@ -4,13 +4,35 @@ import { ShoppingCart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Product } from "@prisma/client";
 import Link from "next/link";
+import { addProductToCart } from "@/features/user/user.action";
+import { useRouter } from "next/navigation";
 
 export const ProductCard = ({ product }: { product: Product }) => {
-  const handleAddToCart = (e: React.MouseEvent) => {
-    // Stops the click from triggering the parent <Link>
+  const router = useRouter();
+
+  const handleAddToCart = async (
+    e: React.MouseEvent,
+    productId: string,
+    quantity: number,
+  ) => {
     e.preventDefault();
     e.stopPropagation();
-    alert(`Added ${product.title} to cart!`);
+
+    let colour = "";
+    let size = "";
+    if (product.hasColours) {
+      product.variants.map((p) => {
+        return (colour = p.colorName);
+      });
+    }
+    if (product.size) {
+      size = product.size[0];
+    }
+
+    const res = await addProductToCart(productId, quantity, colour, size);
+    if (res.status === "success") {
+      router.refresh();
+    }
   };
 
   return (
@@ -53,7 +75,7 @@ export const ProductCard = ({ product }: { product: Product }) => {
 
             <Button
               size="icon"
-              onClick={handleAddToCart}
+              onClick={(e) => handleAddToCart(e, product.id, 1)}
               className="bg-amber-400 hover:bg-amber-500 text-black rounded-xl h-10 w-10 shadow-lg shadow-amber-400/20 active:scale-95 transition-transform"
             >
               <ShoppingCart size={18} />
