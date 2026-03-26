@@ -1,5 +1,4 @@
 import EditPhoneAndRole from "@/components/auth/EditPhoneAndRole";
-import Navbar from "@/components/user/Navbar";
 import { getCurrentUser, isAdminExist } from "@/features/auth/auth.queries";
 import { redirect } from "next/navigation";
 
@@ -24,10 +23,7 @@ export default async function UserLayout({
 
   return (
     <>
-      <section className="">
-        <Navbar />
-        {children}
-      </section>
+      <section className="">{children}</section>
     </>
   );
 }

@@ -2,6 +2,8 @@
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "../auth/auth.queries";
 import { revalidatePath } from "next/cache";
+import { CheckOutPageDataType } from "@/components/user/CheckoutComp";
+import { CartItemWithProduct } from "@/components/user/CartPage";
 
 export const addProductToCart = async (
   productId: string,
@@ -81,5 +83,60 @@ export const deleteCartItem = async (cartId: string) => {
   } catch (error) {
     console.error("Delete Error:", error);
     return { status: "error", message: "Failed to remove item" };
+  }
+};
+
+export const createOrderAction = async (
+  data: CheckOutPageDataType,
+  cartItems: CartItemWithProduct[],
+  subtotal: number,
+  deliveryCharge: number,
+  serviceCharge: number,
+  total: number,
+  userId: string,
+) => {
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      const newOrder = await tx.order.create({
+        data: {
+          buyerId: userId,
+          productTotal: subtotal,
+          deliveryCharge,
+          serviceCharge,
+          totalAmount: total,
+          paymentMethod: data.paymentMethod,
+          address: {
+            name: data.name,
+            phone: data.phone,
+            address: data.address,
+            city: data.city,
+            pincode: data.pincode,
+          },
+          items: {
+            create: cartItems.map((item) => ({
+              productId: item.product.id,
+              quantity: item.quantity,
+              price: item.product.price,
+            })),
+          },
+        },
+      });
+
+      await tx.cartItem.deleteMany({
+        where: {
+          userId: userId,
+        },
+      });
+
+      return newOrder;
+    });
+
+    return { success: true, paymentMethod: result.paymentMethod };
+  } catch (error) {
+    console.error("ORDER_ACTION_ERROR:", error);
+    return {
+      success: false,
+      error: "Could not process order. Please try again.",
+    };
   }
 };

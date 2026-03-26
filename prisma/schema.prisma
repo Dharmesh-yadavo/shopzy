@@ -27,13 +27,55 @@ model User {
   rejectedReason     String?
 
   // Relationships
-  products    Product[]    // A vendor can have many products
+  products    Product[]    
   cart        CartItem[]
+  order       Order[]
   
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
   @@map("users")
+}
+
+model Order {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  buyerId        String         @db.ObjectId
+  buyer          User           @relation(fields: [buyerId], references: [id])
+  
+  items          OrderItem[]         
+
+  productTotal   Int
+  deliveryCharge Int
+  serviceCharge  Int
+  totalAmount    Int
+
+  paymentMethod  PaymentMethod  
+  isPaid         Boolean        @default(false)
+  orderStatus    OrderStatus    @default(pending)
+
+  canceledAt     DateTime?
+  returnedAmount Int?
+
+  address        Address        
+  paymentDetails PaymentDetails? 
+
+  deliveryDate   DateTime?
+  deliveryOtp    String?
+  otpExpiresAt   DateTime?      
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+}
+
+model OrderItem {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String  @db.ObjectId
+  order     Order   @relation(fields: [orderId], references: [id])
+  
+  productId String  @db.ObjectId
+  product   Product @relation(fields: [productId], references: [id])
+  
+  quantity  Int
+  price     Int     
 }
 
 model CartItem {
@@ -89,7 +131,9 @@ model Product {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt 
 
+// Back-Relationships
   cartItems CartItem[]
+  orderItems        OrderItem[]
 }
 
 type ProductVariant {
@@ -117,3 +161,30 @@ enum VerificationStatus {
   approved
   rejected
 }
+
+type Address {
+  name   String
+  phone  String
+  address String
+  city    String
+  pincode String
+}
+
+type PaymentDetails {
+  stripePaymentId    String?
+  stripeSessionId    String?
+}
+
+enum PaymentMethod {
+  cod
+  stripe
+}
+
+enum OrderStatus {
+  pending
+  confirmed
+  shipped 
+  delivered
+  returned 
+  cancelled
+} 

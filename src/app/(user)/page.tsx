@@ -1,5 +1,6 @@
 import Footer from "@/components/user/Footer";
 import HeroSection from "@/components/user/HeroSection";
+import Navbar from "@/components/user/Navbar";
 import ProductShowcase from "@/components/user/ProductShowcase";
 import { getCurrentUser } from "@/features/auth/auth.queries";
 import { getAllProducts } from "@/features/user/user.query";
@@ -17,6 +18,8 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-black text-white font-sans pt-8 ">
+      <Navbar />
+
       <HeroSection />
 
       <ProductShowcase product={products} />

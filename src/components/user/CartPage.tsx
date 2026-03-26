@@ -2,23 +2,22 @@
 import { CartItem, Product, ProductVariant } from "@prisma/client";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import {
   deleteCartItem,
   updateCartQuantity,
 } from "@/features/user/user.action";
+import Link from "next/link";
 
 export interface CartItemWithProduct extends CartItem {
   product: Product & {
-    variants: ProductVariant[]; // Ensuring variants are typed since they are Json/Types in MongoDB
+    variants: ProductVariant[];
   };
 }
 
 const CartPage = ({ cartItems }: { cartItems: CartItemWithProduct[] }) => {
-  const [count, setCount] = useState(1);
-
+  //
   const subtotal = cartItems.reduce((acc, item) => {
     return acc + item.product.price * item.quantity;
   }, 0);
@@ -150,10 +149,14 @@ const CartPage = ({ cartItems }: { cartItems: CartItemWithProduct[] }) => {
             ₹{subtotal.toLocaleString("en-IN")}
           </span>
         </div>
-        <Button className="w-full bg-amber-400 text-black hover:bg-amber-500 font-bold py-6 text-lg">
-          Checkout
-        </Button>
-        <p className="text-[10px] text-zinc-500 text-center uppercase tracking-widest">
+
+        <Link href={`/checkout/${cartItems[0].userId}`}>
+          <Button className="w-full bg-amber-400 text-black hover:bg-amber-500 font-bold py-6 text-lg">
+            Checkout
+          </Button>
+        </Link>
+
+        <p className="text-[10px] mt-2 text-zinc-500 text-center uppercase tracking-widest">
           Secure Checkout • 100% Authentic Products
         </p>
       </div>
