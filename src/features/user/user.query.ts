@@ -1,4 +1,6 @@
 import prisma from "@/lib/prisma";
+import { getCurrentUser } from "../auth/auth.queries";
+import { redirect } from "next/navigation";
 
 export const getAllProducts = async () => {
   try {
@@ -25,5 +27,29 @@ export const getAllCartProducts = async (userId: string) => {
   } catch (error) {
     console.error(error);
     return [];
+  }
+};
+
+export const getAllOrders = async () => {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) {
+      return redirect("/");
+    }
+
+    const orderItems = await prisma.orderItem.findMany({
+      select: {
+        id: true,
+        order: true,
+        product: true,
+        quantity: true,
+        price: true,
+      },
+    });
+
+    return orderItems;
+  } catch (error) {
+    console.log(error);
   }
 };

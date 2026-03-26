@@ -125,7 +125,7 @@ export const ProductShowcasePage = ({
                               alt={product.title}
                               width={100}
                               height={100}
-                              className="object-cover transition-transform duration-500 group-hover:scale-110"
+                              className="object-fit p-1 rounded-sm transition-transform duration-500 group-hover:scale-110"
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center bg-zinc-800">
