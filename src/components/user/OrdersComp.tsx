@@ -52,7 +52,9 @@ export const OrdersComp = ({ orders }: { orders: OrdersDataType[] }) => {
                   </div>
                   <div className="flex flex-col justify-center gap-1.5">
                     <div className="flex items-center gap-2">
-                      <Badge className="bg-amber-400 text-black font-black uppercase text-[9px] px-2 py-0 rounded-md">
+                      <Badge
+                        className={` text-black font-black uppercase text-[9px] px-2 py-0 rounded-md ${item.order.orderStatus === "cancelled" ? "bg-amber-700" : "bg-amber-400"}`}
+                      >
                         {item.order.orderStatus}
                       </Badge>
                       <span className="font-mono text-zinc-600 text-[10px] font-bold">
@@ -79,7 +81,11 @@ export const OrdersComp = ({ orders }: { orders: OrdersDataType[] }) => {
                       Total Paid
                     </p>
                     <p className="text-xl md:text-2xl font-black text-green-400 italic">
-                      ₹{item.order.totalAmount.toLocaleString()}
+                      {new Intl.NumberFormat("en-IN", {
+                        style: "currency",
+                        currency: "INR",
+                        maximumFractionDigits: 0,
+                      }).format(item.price)}
                     </p>
                   </div>
 

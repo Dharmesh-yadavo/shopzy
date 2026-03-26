@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { Clock, CheckCircle2, Package } from "lucide-react";
+import { Clock, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getVendorsOrders } from "@/features/vendor/vendor.queries";
 import { OrdersStatusUpdater } from "@/components/vendor/OrdersStatusUpdater";
@@ -77,9 +77,6 @@ const OrdersPage = async () => {
 
                 <TableCell className="py-8 max-w-70">
                   <div className="flex items-start gap-3">
-                    <div className="bg-zinc-900 p-2 rounded-lg border border-zinc-800">
-                      <Package size={16} className="text-zinc-500" />
-                    </div>
                     <span className="text-xs text-zinc-300 font-bold leading-tight line-clamp-2">
                       {order.product}
                     </span>

@@ -11,18 +11,41 @@ import {
 import { OrdersDataType } from "./OrdersComp";
 import Image from "next/image";
 import { Separator } from "../ui/separator";
+import { cancelOrderAction } from "@/features/user/user.action";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 
 export const OrderDetailsDialog = ({
   orderItem,
 }: {
   orderItem: OrdersDataType;
 }) => {
+  const [open, setOpen] = useState(false); // State to control dialog
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  const handleCancel = async () => {
+    startTransition(async () => {
+      const result = await cancelOrderAction(
+        orderItem.order.id,
+        "cancelled",
+        orderItem.price,
+      );
+
+      if (result.success) {
+        setOpen(false);
+        router.refresh();
+      } else {
+        console.error("Failed to cancel order");
+      }
+    });
+  };
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          className="bg-zinc-900 border-zinc-800 hover:bg-zinc-800 text-zinc-400 rounded-xl h-10 px-4 text-[10px] font-black uppercase tracking-widest"
+          className="bg-zinc-900 border-zinc-800  text-zinc-400 rounded-xl h-10 px-4 text-[10px] font-black uppercase tracking-widest"
         >
           Details
         </Button>
@@ -97,19 +120,32 @@ export const OrderDetailsDialog = ({
                 Total Paid
               </span>
               <span className="text-xl font-black text-green-400 italic">
-                ₹{orderItem.order.totalAmount.toLocaleString()}
+                {new Intl.NumberFormat("en-IN", {
+                  style: "currency",
+                  currency: "INR",
+                  maximumFractionDigits: 0,
+                }).format(orderItem.price)}
               </span>
             </div>
           </div>
         </div>
 
         <DialogFooter className="p-4 bg-zinc-900/20 border-t border-zinc-800/50">
-          <Button
-            variant="destructive"
-            className="w-full bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white rounded-xl text-[10px] font-black uppercase"
-          >
-            Cancel Order
-          </Button>
+          {orderItem.order.orderStatus !== "delivered" &&
+          orderItem.order.orderStatus !== "cancelled" ? (
+            <Button
+              disabled={isPending}
+              onClick={handleCancel}
+              variant="destructive"
+              className="w-full bg-red-500/10 text-red-500 border-red-500/20 hover:bg-red-500 hover:text-white rounded-xl text-[10px] font-black uppercase"
+            >
+              {isPending ? "Cancelling..." : "Cancel Order"}
+            </Button>
+          ) : (
+            <p className="text-[10px] text-zinc-500 uppercase font-black">
+              Order {orderItem.order.orderStatus}
+            </p>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

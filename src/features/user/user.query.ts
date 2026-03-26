@@ -46,6 +46,11 @@ export const getAllOrders = async () => {
         quantity: true,
         price: true,
       },
+      orderBy: {
+        order: {
+          createdAt: "desc",
+        },
+      },
     });
 
     return orderItems;

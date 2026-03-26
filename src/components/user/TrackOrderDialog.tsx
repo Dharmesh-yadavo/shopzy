@@ -22,7 +22,10 @@ export const TrackOrderDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-amber-400 hover:bg-amber-300 text-black rounded-xl h-10 px-4 text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+        <Button
+          variant="ghost"
+          className="bg-amber-400 hover:bg-amber-300 text-black rounded-xl h-10 px-4 text-[10px] font-black uppercase tracking-widest flex items-center gap-2"
+        >
           <Truck size={14} /> <span className="hidden sm:block">Track</span>
         </Button>
       </DialogTrigger>

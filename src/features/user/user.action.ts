@@ -140,3 +140,31 @@ export const createOrderAction = async (
     };
   }
 };
+
+export const cancelOrderAction = async (
+  orderId: string,
+  status:
+    | "pending"
+    | "confirmed"
+    | "shipped"
+    | "delivered"
+    | "returned"
+    | "cancelled",
+  price: number,
+) => {
+  try {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        orderStatus: status,
+        canceledAt: new Date(),
+        returnedAmount: price,
+      },
+    });
+    revalidatePath("/vendor/orders");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false };
+  }
+};
