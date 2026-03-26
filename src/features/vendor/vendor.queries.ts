@@ -1,4 +1,6 @@
 import prisma from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import { getCurrentUser } from "../auth/auth.queries";
 
 export const getAllVendors = async () => {
   try {
@@ -82,5 +84,47 @@ export const vendorById = async (vendorId: string) => {
     return vendors;
   } catch (error) {
     console.error(error);
+  }
+};
+
+export const getVendorsOrders = async () => {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user || user.role !== "vendor") {
+      return null;
+    }
+
+    const orderItems = await prisma.orderItem.findMany({
+      where: {
+        product: {
+          vendorId: user.id,
+        },
+      },
+      include: {
+        product: true,
+        order: true,
+      },
+      orderBy: {
+        order: {
+          createdAt: "desc",
+        },
+      },
+    });
+
+    return orderItems.map((item) => ({
+      id: item.id,
+      actualOrderId: item.order.id,
+      buyer: item.order.address.name,
+      phone: item.order.address.phone,
+      product: item.product.title,
+      payment: item.order.paymentMethod,
+      status: item.order.orderStatus,
+      total: item.price * item.quantity,
+      date: item.order.createdAt,
+    }));
+  } catch (error) {
+    console.error("GET_VENDOR_ORDERS_ERROR:", error);
+    return [];
   }
 };

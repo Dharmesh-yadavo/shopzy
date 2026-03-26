@@ -194,3 +194,20 @@ export const toggleProductStatusAction = async (
     return { success: false, error: "Failed to update visibility" };
   }
 };
+
+export const updateOrderStatus = async (
+  orderId: string,
+  status: "pending" | "confirmed" | "shipped" | "delivered" | "returned",
+) => {
+  try {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { orderStatus: status },
+    });
+    revalidatePath("/vendor/orders");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false };
+  }
+};
