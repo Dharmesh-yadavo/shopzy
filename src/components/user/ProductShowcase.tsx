@@ -8,6 +8,7 @@ import {
 import { Headphones, Heart, User, Watch } from "lucide-react";
 import { ProductCard } from "./ProductCard";
 import { Product } from "@prisma/client";
+import Link from "next/link";
 
 const ProductShowcase = ({ product }: { product: Product[] }) => {
   return (
@@ -24,8 +25,9 @@ const ProductShowcase = ({ product }: { product: Product[] }) => {
             { name: "Audio", icon: <Headphones /> },
             { name: "Fitness", icon: <Watch /> },
           ].map((cat, i) => (
-            <div
+            <Link
               key={i}
+              href={`/category/${cat.name.toLowerCase()}`}
               className="bg-stone-900/50 border border-stone-800 p-6 rounded-2xl flex flex-col items-center gap-3 cursor-pointer hover:border-yellow-400/50 group transition-all"
             >
               <div className="text-stone-500 group-hover:text-yellow-400 transition-colors">
@@ -34,7 +36,7 @@ const ProductShowcase = ({ product }: { product: Product[] }) => {
               <span className="text-[10px] font-bold uppercase tracking-tighter text-stone-500">
                 {cat.name}
               </span>
-            </div>
+            </Link>
           ))}
         </div>
 

@@ -57,7 +57,6 @@ const CheckoutPage = ({
   const total = subtotal + serviceCharge + deliveryCharge;
 
   const onSubmit = async (data: CheckOutPageDataType) => {
-    const loadingToast = toast.loading("Processing your order...");
     try {
       const result = await createOrderAction(
         data,

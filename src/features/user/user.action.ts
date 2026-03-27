@@ -131,7 +131,11 @@ export const createOrderAction = async (
       return newOrder;
     });
 
-    return { success: true, paymentMethod: result.paymentMethod };
+    return {
+      success: true,
+      orderId: result.id,
+      paymentMethod: result.paymentMethod,
+    };
   } catch (error) {
     console.error("ORDER_ACTION_ERROR:", error);
     return {

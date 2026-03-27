@@ -17,7 +17,7 @@ export default async function Home() {
   if (user?.role === "admin") redirect("/admin");
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans pt-8 ">
+    <div className="min-h-screen bg-black text-white font-sans ">
       <Navbar />
 
       <HeroSection />

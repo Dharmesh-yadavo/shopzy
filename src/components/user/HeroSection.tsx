@@ -42,7 +42,7 @@ const TOP_PRODUCTS = [
 
 export default function HeroSection() {
   return (
-    <section className="max-w-7xl mx-auto px-6 lg:px-8 ">
+    <section className="max-w-7xl pt-4 mx-auto px-6 lg:px-8 ">
       <div className="bg-[#111] rounded-[2.5rem] overflow-hidden max-h-120 flex flex-col lg:flex-row items-stretch border border-stone-800 shadow-2xl">
         {/* Left Side: Content */}
         <div className="flex-1 p-10   flex flex-col justify-center relative overflow-hidden bg-linear-to-br from-[#1a1a1a] to-black">

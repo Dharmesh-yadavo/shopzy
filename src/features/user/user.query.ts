@@ -58,3 +58,15 @@ export const getAllOrders = async () => {
     console.log(error);
   }
 };
+
+export const getProductByCategory = async (category: string) => {
+  try {
+    return await prisma.product.findMany({
+      where: {
+        category,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};
