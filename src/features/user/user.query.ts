@@ -70,3 +70,45 @@ export const getProductByCategory = async (category: string) => {
     console.error(error);
   }
 };
+
+export const getProductsBySearch = async (
+  query?: string,
+  minPrice?: number | undefined,
+  maxPrice?: number | undefined,
+  rating?: number | undefined,
+  freeDelivery?: string,
+) => {
+  const safeMax = isNaN(Number(maxPrice)) ? undefined : Number(maxPrice);
+  const finalMax = safeMax === 100000 ? undefined : safeMax;
+  return await prisma.product.findMany({
+    where: {
+      AND: [
+        query
+          ? {
+              OR: [
+                { title: { contains: query, mode: "insensitive" } },
+                { description: { contains: query, mode: "insensitive" } },
+                { category: { contains: query, mode: "insensitive" } },
+              ],
+            }
+          : {},
+        {
+          price: {
+            gte: minPrice || 0,
+            lte: finalMax,
+          },
+        },
+        freeDelivery ? { freeDelivery: true } : {},
+        rating
+          ? {
+              reviews: {
+                some: {
+                  rating: { gte: rating },
+                },
+              },
+            }
+          : {},
+      ],
+    },
+  });
+};

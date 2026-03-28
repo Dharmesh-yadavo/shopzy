@@ -64,8 +64,8 @@ export const ProductCard = ({ product }: { product: Product }) => {
             </div>
           </div>
 
-          <div className="flex justify-between items-center">
-            <span className="text-amber-400 text-2xl font-bold italic">
+          <div className="flex justify-between items-center ">
+            <span className="text-amber-400 text-xl font-bold italic">
               {new Intl.NumberFormat("en-IN", {
                 style: "currency",
                 currency: "INR",
@@ -76,7 +76,7 @@ export const ProductCard = ({ product }: { product: Product }) => {
             <Button
               size="icon"
               onClick={(e) => handleAddToCart(e, product.id, 1)}
-              className="bg-amber-400 hover:bg-amber-500 text-black rounded-xl h-10 w-10 shadow-lg shadow-amber-400/20 active:scale-95 transition-transform"
+              className="bg-amber-400 hover:bg-amber-500 text-black rounded-xl h-9 w-9 shadow-lg shadow-amber-400/20 active:scale-95 transition-transform"
             >
               <ShoppingCart size={18} />
             </Button>

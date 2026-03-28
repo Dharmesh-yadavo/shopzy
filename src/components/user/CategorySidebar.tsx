@@ -73,7 +73,7 @@ export default function CategorySidebar() {
           </nav>
         </div>
 
-        <div className="p-6 rounded-[2rem] bg-gradient-to-br from-amber-500/10 to-transparent border border-amber-500/10 hidden lg:block">
+        <div className="p-6 rounded-[2rem] bg-linear-to-br from-amber-500/10 to-transparent border border-amber-500/10 hidden lg:block">
           <p className="text-xs font-bold text-amber-500 uppercase mb-2">
             New Arrivals
           </p>

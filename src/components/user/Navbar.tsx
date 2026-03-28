@@ -38,6 +38,7 @@ const Navbar = ({ user, cart }: { user: UserType; cart: CartItem[] }) => {
     if (searchQuery.trim()) {
       router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
+    setSearchQuery("");
   };
 
   return (
