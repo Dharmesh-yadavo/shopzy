@@ -1,5 +1,6 @@
 "use server";
 import prisma from "@/lib/prisma";
+import argon2 from "argon2";
 import { getCurrentUser } from "../auth/auth.queries";
 import { revalidatePath } from "next/cache";
 import { CheckOutPageDataType } from "@/components/user/CheckoutComp";
@@ -170,5 +171,111 @@ export const cancelOrderAction = async (
   } catch (error) {
     console.error(error);
     return { success: false };
+  }
+};
+
+export const updateUserDetails = async ({
+  userId,
+  name,
+  phone,
+  imgUrl,
+}: {
+  userId: string;
+  name?: string;
+  phone?: string;
+  imgUrl?: string;
+}) => {
+  try {
+    await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name,
+        phone,
+        image: imgUrl,
+      },
+    });
+    revalidatePath("/profile");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false };
+  }
+};
+
+export const seetingPageAction = async (userId: string) => {
+  try {
+    const res = await prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        password: true,
+      },
+    });
+
+    return { status: "success", password: res?.password };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const updatePasswordAction = async ({
+  userId,
+  oldPassword,
+  newPassword,
+}: {
+  userId: string;
+  oldPassword?: string;
+  newPassword: string;
+}) => {
+  try {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return { status: "error", message: "User not found" };
+
+    if (user.password) {
+      if (!oldPassword)
+        return { status: "error", message: "Old password required" };
+
+      const isMatch = await argon2.verify(user.password, oldPassword);
+      if (!isMatch)
+        return { status: "error", message: "Incorrect old password" };
+    }
+
+    const hashedPassword = await argon2.hash(newPassword);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+    });
+
+    return { status: "success", message: "Password updated successfully" };
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const updateUserNotifications = async (
+  userId: string,
+  orderNotification?: boolean,
+  promotionalEmails?: boolean,
+) => {
+  try {
+    // Only pass the fields that are actually defined
+    const data: { orderNotification?: boolean; promotionalEmails?: boolean } =
+      {};
+    if (orderNotification !== undefined)
+      data.orderNotification = orderNotification;
+    if (promotionalEmails !== undefined)
+      data.promotionalEmails = promotionalEmails;
+
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data,
+    });
+
+    return { success: true, data: updatedUser };
+  } catch (error) {
+    console.error("Notification Update Error:", error);
+    return null;
   }
 };

@@ -26,6 +26,10 @@ model User {
   approvedAt         DateTime?
   rejectedReason     String?
 
+  //Notifications 
+  orderNotification  Boolean?  @default(false) 
+  promotionalEmails  Boolean?  @default(false) 
+
   // Relationships
   products    Product[]    
   cart        CartItem[]

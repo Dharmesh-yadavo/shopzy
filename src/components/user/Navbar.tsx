@@ -23,6 +23,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { CartItem } from "@prisma/client";
+import { handleUserLogoutAction } from "@/features/auth/auth.action";
 
 interface UserType {
   email: string;
@@ -42,7 +43,7 @@ const Navbar = ({ user, cart }: { user: UserType; cart: CartItem[] }) => {
   };
 
   return (
-    <nav className="bg-black sticky top-0 border-b border-stone-800/80 px-4 md:px-8 py-4">
+    <nav className="bg-black sticky top-0 border-b border-stone-800/80 px-4 md:px-8 py-4 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
         {/* 1. Brand Logo */}
         <Link href="/" className="shrink-0">
@@ -115,7 +116,7 @@ const Navbar = ({ user, cart }: { user: UserType; cart: CartItem[] }) => {
 
               <DropdownMenuContent
                 align="end"
-                className="w-56 bg-stone-900 border-stone-800 text-stone-300 rounded-2xl p-2 shadow-2xl"
+                className="w-56 z-100 bg-stone-900 border-stone-800 text-stone-300 rounded-2xl p-2 shadow-2xl"
               >
                 <DropdownMenuLabel className="px-3 py-2 font-normal">
                   <div className="flex flex-col space-y-1">
@@ -182,9 +183,7 @@ const Navbar = ({ user, cart }: { user: UserType; cart: CartItem[] }) => {
 
                 <DropdownMenuItem
                   className="focus:bg-red-500/10 focus:text-red-500 text-stone-400 rounded-xl cursor-pointer flex items-center gap-3 px-2 py-2.5"
-                  onClick={() => {
-                    /* handle logout */
-                  }}
+                  onClick={handleUserLogoutAction}
                 >
                   <LogOut size={16} /> Logout
                 </DropdownMenuItem>

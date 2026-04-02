@@ -21,6 +21,8 @@ const safeUserSelect = {
   rejectedReason: true,
   createdAt: true,
   updatedAt: true,
+  orderNotification: true,
+  promotionalEmails: true,
 };
 
 export const getCurrentUser = cache(async () => {

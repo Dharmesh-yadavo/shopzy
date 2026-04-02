@@ -112,3 +112,13 @@ export const getProductsBySearch = async (
     },
   });
 };
+
+export const getDetailsOfUser = async (userId: string) => {
+  return await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      cart: true,
+      order: true,
+    },
+  });
+};
