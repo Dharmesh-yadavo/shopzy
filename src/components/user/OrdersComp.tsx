@@ -18,10 +18,10 @@ export interface OrdersDataType {
 }
 
 export const OrdersComp = ({ orders }: { orders: OrdersDataType[] }) => {
+  console.log("Order: ", orders);
   return (
     <div className="min-h-screen bg-[#09090b] text-zinc-100 p-4 md:p-8 font-sans selection:bg-amber-400">
       <div className="max-w-5xl mx-auto space-y-8">
-        {/* Header Section */}
         <div className="flex flex-col gap-2">
           <h1 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter text-zinc-100">
             MY <span className="text-amber-400">ORDERS</span>
@@ -31,7 +31,6 @@ export const OrdersComp = ({ orders }: { orders: OrdersDataType[] }) => {
           </p>
         </div>
 
-        {/* Orders List */}
         <div className="space-y-4">
           {orders.map((item) => (
             <div

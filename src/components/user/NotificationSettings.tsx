@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Switch } from "../ui/switch";
 import { Bell, Loader2 } from "lucide-react";
 import { updateUserNotifications } from "@/features/user/user.action";
-import { toast } from "sonner";
 
 interface UserType {
   id: string;

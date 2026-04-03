@@ -58,6 +58,7 @@ const CheckoutPage = ({
 
   const onSubmit = async (data: CheckOutPageDataType) => {
     try {
+      const isPaid = false;
       const result = await createOrderAction(
         data,
         cartItems,
@@ -66,22 +67,36 @@ const CheckoutPage = ({
         serviceCharge,
         total,
         userId,
+        isPaid,
       );
 
-      if (result.success) {
-        toast.success("Order created!");
+      if (!result.success) {
+        toast.error("Failed to initialize order");
+        return;
+      }
 
-        if (data.paymentMethod === "stripe") {
-          // Redirect to your Stripe checkout API
-          // router.push(`/api/stripe/checkout?orderId=${result.orderId}`);
+      if (data.paymentMethod === "cod") {
+        toast.success("Order placed successfully!");
+        router.push("/");
+      } else if (data.paymentMethod === "stripe") {
+        toast.loading("Redirecting to secure payment...");
+
+        const response = await fetch("/api/stripe/checkout", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId: result.orderId }),
+        });
+
+        const { url } = await response.json();
+        if (url) {
+          window.location.href = url;
         } else {
-          router.push("/");
+          toast.error("Stripe session failed");
         }
-      } else {
-        toast.error("Failed to place order");
       }
     } catch (error) {
       console.error("Submission error", error);
+      toast.error("Something went wrong");
     }
   };
 
@@ -203,32 +218,42 @@ const CheckoutPage = ({
 
             {/* Cart Items List */}
             <div className="space-y-4 max-h-95 overflow-y-auto pr-3 mb-8 scrollbar-thin">
-              {cartItems.map((item) => (
-                <div key={item.id} className="flex gap-4 items-center group">
-                  <div className="relative h-20 w-20 rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800">
-                    <Image
-                      src={item.product.images[0]}
-                      alt={item.product.title}
-                      fill
-                      className="object-cover p-1"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-sm font-bold line-clamp-1">
-                      {item.product.title}
-                    </h4>
-                    <p className="text-[10px] uppercase text-zinc-600 font-black">
-                      QTY: {item.quantity}
+              {cartItems.map((item) => {
+                let imgUrl = item.product.images[0];
+
+                if (item.color !== "NONE") {
+                  const [res] = item.product.variants.filter(
+                    (prod) => prod.colorName === item.color,
+                  );
+                  imgUrl = res.imageUrl;
+                }
+                return (
+                  <div key={item.id} className="flex gap-4 items-center group">
+                    <div className="relative h-20 w-20 rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800">
+                      <Image
+                        src={imgUrl}
+                        alt={item.product.title}
+                        fill
+                        className="object-fit p-1 rounded-xl hover:scale-105"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <h4 className="text-sm font-bold line-clamp-1">
+                        {item.product.title}
+                      </h4>
+                      <p className="text-[10px] uppercase text-zinc-600 font-black">
+                        QTY: {item.quantity}
+                      </p>
+                    </div>
+                    <p className="font-black text-amber-400 italic text-sm">
+                      ₹
+                      {(item.product.price * item.quantity).toLocaleString(
+                        "en-IN",
+                      )}
                     </p>
                   </div>
-                  <p className="font-black text-amber-400 italic text-sm">
-                    ₹
-                    {(item.product.price * item.quantity).toLocaleString(
-                      "en-IN",
-                    )}
-                  </p>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Totals Section */}

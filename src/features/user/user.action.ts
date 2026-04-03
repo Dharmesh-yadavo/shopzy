@@ -95,6 +95,7 @@ export const createOrderAction = async (
   serviceCharge: number,
   total: number,
   userId: string,
+  isPaid: boolean,
 ) => {
   try {
     const result = await prisma.$transaction(async (tx) => {
@@ -106,6 +107,7 @@ export const createOrderAction = async (
           serviceCharge,
           totalAmount: total,
           paymentMethod: data.paymentMethod,
+          isPaid,
           address: {
             name: data.name,
             phone: data.phone,
@@ -118,6 +120,7 @@ export const createOrderAction = async (
               productId: item.product.id,
               quantity: item.quantity,
               price: item.product.price,
+              color: item.color,
             })),
           },
         },
@@ -135,7 +138,6 @@ export const createOrderAction = async (
     return {
       success: true,
       orderId: result.id,
-      paymentMethod: result.paymentMethod,
     };
   } catch (error) {
     console.error("ORDER_ACTION_ERROR:", error);

@@ -38,24 +38,27 @@ export const getAllOrders = async () => {
       return redirect("/");
     }
 
-    const orderItems = await prisma.orderItem.findMany({
-      select: {
-        id: true,
-        order: true,
-        product: true,
-        quantity: true,
-        price: true,
+    // Query the Order model directly
+    const orders = await prisma.order.findMany({
+      where: {
+        buyerId: user.id, // Only get orders for THIS user
+      },
+      include: {
+        items: {
+          include: {
+            product: true, // Gets title, images, etc. for each item
+          },
+        },
       },
       orderBy: {
-        order: {
-          createdAt: "desc",
-        },
+        createdAt: "desc", // Latest orders at the top
       },
     });
 
-    return orderItems;
+    return orders;
   } catch (error) {
-    console.log(error);
+    console.error("GET_ALL_ORDERS_ERROR:", error);
+    return []; // Return empty array on error to prevent frontend crash
   }
 };
 
