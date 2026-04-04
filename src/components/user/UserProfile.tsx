@@ -1,6 +1,7 @@
 "use client";
 import {
   ChevronRight,
+  Cross,
   Loader2,
   LogOut,
   Mail,
@@ -10,6 +11,7 @@ import {
   ShieldCheck,
   ShoppingCart,
   UserIcon,
+  X,
 } from "lucide-react";
 import React, { useRef, useState } from "react";
 import { Input } from "../ui/input";
@@ -188,7 +190,7 @@ export const UserProfile = ({ user }: { user: UserType }) => {
               onClick={() => setToggleEdit(!toggleEdit)}
               className="text-yellow-400 text-[10px] font-black uppercase tracking-widest hover:brightness-125 transition-all"
             >
-              Edit All
+              {toggleEdit ? "Edit All" : <X />}
             </button>
           </div>
 

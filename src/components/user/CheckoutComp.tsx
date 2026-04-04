@@ -75,9 +75,12 @@ const CheckoutPage = ({
         return;
       }
 
-      if (data.paymentMethod === "cod") {
+      if (data.paymentMethod === "cod" && result.success) {
         toast.success("Order placed successfully!");
-        router.push("/");
+        router.refresh();
+        setTimeout(() => {
+          router.push("/");
+        }, 100);
       } else if (data.paymentMethod === "stripe") {
         toast.loading("Redirecting to secure payment...");
 

@@ -51,7 +51,7 @@ const Footer = () => {
             <ul className="space-y-4 text-sm text-stone-400">
               <li>
                 <Link
-                  href="/new-arrivals"
+                  href="/"
                   className="hover:text-yellow-400 transition-colors"
                 >
                   New Arrivals
@@ -59,7 +59,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/best-sellers"
+                  href="/"
                   className="hover:text-yellow-400 transition-colors"
                 >
                   Best Sellers
@@ -67,7 +67,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/vendor/dashboard"
+                  href="/vendor"
                   className="hover:text-yellow-400 transition-colors"
                 >
                   Vendor Dashboard
@@ -75,7 +75,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/affiliate"
+                  href="/"
                   className="hover:text-yellow-400 transition-colors"
                 >
                   Affiliate Program
@@ -92,7 +92,7 @@ const Footer = () => {
             <ul className="space-y-4 text-sm text-stone-400">
               <li>
                 <Link
-                  href="/track-order"
+                  href="/order"
                   className="hover:text-yellow-400 transition-colors"
                 >
                   Track Your Order
@@ -100,7 +100,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/returns"
+                  href="/order"
                   className="hover:text-yellow-400 transition-colors"
                 >
                   Returns & Exchanges
@@ -108,7 +108,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/shipping"
+                  href="/"
                   className="hover:text-yellow-400 transition-colors"
                 >
                   Shipping Policy
@@ -116,7 +116,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/help"
+                  href="/"
                   className="hover:text-yellow-400 transition-colors"
                 >
                   Help Center
@@ -133,7 +133,7 @@ const Footer = () => {
             <ul className="space-y-4 text-sm text-stone-400">
               <li>
                 <Link
-                  href="/admin/login"
+                  href="/login"
                   className="hover:text-yellow-400 transition-colors flex items-center gap-2 group"
                 >
                   <ShieldCheck
@@ -145,7 +145,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  href="/vendor/signup"
+                  href="/register"
                   className="hover:text-yellow-400 transition-colors flex items-center gap-2 group"
                 >
                   <Store
@@ -163,19 +163,13 @@ const Footer = () => {
         <div className="border-t border-stone-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] text-stone-500 uppercase font-bold tracking-[2px]">
           <p>© {currentYear} Shopzy Store Platform. All Rights Reserved.</p>
           <div className="flex gap-8">
-            <Link
-              href="/privacy"
-              className="hover:text-white transition-colors"
-            >
+            <Link href="/" className="hover:text-white transition-colors">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-white transition-colors">
+            <Link href="/" className="hover:text-white transition-colors">
               Terms of Service
             </Link>
-            <Link
-              href="/cookies"
-              className="hover:text-white transition-colors"
-            >
+            <Link href="/" className="hover:text-white transition-colors">
               Cookie Settings
             </Link>
           </div>

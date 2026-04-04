@@ -30,7 +30,7 @@ export const ProductCard = ({ product }: { product: Product }) => {
     const res = await addProductToCart(productId, quantity, color, size);
 
     if (res.status === "success") {
-      toast.success(res.message);
+      toast.success(res.message, { position: "bottom-center", duration: 1000 });
       router.refresh();
     }
   };

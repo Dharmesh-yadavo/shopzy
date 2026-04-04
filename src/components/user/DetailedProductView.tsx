@@ -18,6 +18,7 @@ import { Table, TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { Badge } from "../ui/badge";
 import { Avatar, AvatarFallback } from "../ui/avatar";
 import { addProductToCart } from "@/features/user/user.action";
+import { useRouter } from "next/navigation";
 
 interface Vendor {
   id: string;
@@ -120,6 +121,8 @@ export const DetailedProductView = ({
 
   console.log("Product: ", product);
 
+  const router = useRouter();
+
   const handleCartButton = async (
     productId: string,
     quantity: number,
@@ -128,9 +131,10 @@ export const DetailedProductView = ({
   ) => {
     const res = await addProductToCart(productId, quantity, color, size);
     if (res.status === "success") {
-      toast.success(res.message);
+      toast.success(res.message, { position: "bottom-center", duration: 1000 });
+      router.refresh();
     } else {
-      toast.error(res.message);
+      toast.error(res.message, { duration: 1000 });
     }
   };
 
