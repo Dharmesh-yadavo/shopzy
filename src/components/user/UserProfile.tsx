@@ -1,7 +1,6 @@
 "use client";
 import {
   ChevronRight,
-  Cross,
   Loader2,
   LogOut,
   Mail,

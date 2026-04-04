@@ -15,6 +15,8 @@ import { OrdersStatusUpdater } from "@/components/vendor/OrdersStatusUpdater";
 const OrdersPage = async () => {
   const orders = await getVendorsOrders();
 
+  console.log("Total Orders: ", orders);
+
   return (
     <div className="flex flex-col w-full h-fit bg-[#09090b] text-white p-6 md:p-10 space-y-8">
       {/* Header Section */}

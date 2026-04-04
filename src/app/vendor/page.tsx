@@ -1,18 +1,29 @@
 import { AlertSection } from "@/components/vendor/AlertSection";
 import { StatsGrid } from "@/components/vendor/StatsGrid";
 import { VendorDashboardHeader } from "@/components/vendor/VendorDashboardHeader";
+import { getCurrentUser } from "@/features/auth/auth.queries";
+import { vendorStats } from "@/features/vendor/vendor.queries";
+import { redirect } from "next/navigation";
 
 const VendorHome = async () => {
+  const vendor = await getCurrentUser();
+
+  if (!vendor) redirect("/login");
+
+  const stats = await vendorStats(vendor.id);
+
   return (
     <div className="flex flex-col flex-1 w-full min-h-screen p-4 lg:p-8">
       {/* 1. Header with detailed vendor info */}
       <VendorDashboardHeader
-        vendorName="LG Electronics"
-        email="problemgamer2502@gmail.com"
+        vendorName={vendor.name}
+        email={vendor.email}
+        status={vendor.verificationStatus}
+        image={vendor.image}
       />
 
       {/* 2. Stats Grid with visual progress bars */}
-      <StatsGrid />
+      <StatsGrid stats={stats} />
 
       {/* 3. Urgent notifications & Quick sections */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

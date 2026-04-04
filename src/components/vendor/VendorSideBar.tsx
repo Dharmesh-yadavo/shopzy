@@ -26,10 +26,12 @@ import {
   LogOut,
   LucideIcon,
   Package,
+  Store,
   User,
 } from "lucide-react";
 import Link from "next/link";
 import { handleUserLogoutAction } from "@/features/auth/auth.action";
+import Image from "next/image";
 
 export interface SidebarItem {
   title: string;
@@ -73,17 +75,19 @@ export const VendorSidebar = ({ user }: { user: UserDataType }) => {
 
   return (
     <Sidebar className="border-r border-zinc-800 bg-black text-zinc-400">
-      <SidebarHeader className="p-2">
-        {/* Logo/Name area matching the image */}
-        <div className="flex items-center gap-3 px-2 py-4">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-400 text-black">
-            <span className="font-bold">V</span>
+      <SidebarHeader className="p-4">
+        {/* Brand Logo Section */}
+        <div className="flex items-center gap-3 px-2 py-2">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-400 text-black shadow-lg shadow-amber-400/20">
+            <Store size={20} strokeWidth={2.5} />
           </div>
           <div className="flex flex-col">
-            <span className="text-lg font-bold text-white tracking-tight leading-none">
-              {layoutName}
+            <span className="text-lg font-black italic text-white tracking-tighter uppercase leading-none">
+              Shopzy <span className="text-amber-400">Pro</span>
             </span>
-            <span className="text-xs text-zinc-500">Premium Store</span>
+            <span className="text-[10px] font-bold text-zinc-600 uppercase tracking-widest mt-0.5">
+              Vendor Panel
+            </span>
           </div>
         </div>
       </SidebarHeader>
@@ -132,14 +136,23 @@ export const VendorSidebar = ({ user }: { user: UserDataType }) => {
                   size="lg"
                   className="w-full flex items-center gap-3 p-3 rounded-xl border border-zinc-800/50 bg-zinc-900/30 hover:bg-zinc-800/50 hover:border-amber-400/20 transition-all duration-300 group"
                 >
-                  <Avatar className="h-9 w-9 border border-zinc-700 group-hover:border-amber-400/50 transition-colors">
-                    <AvatarImage
-                      src={user?.image || "https://github.com/shadcn.png"}
-                    />
-                    <AvatarFallback className="bg-amber-400 text-black font-bold text-xs">
-                      {user?.name?.substring(0, 2).toUpperCase() || "VD"}
-                    </AvatarFallback>
-                  </Avatar>
+                  <div className="h-9 w-9 rounded-xl overflow-hidden border border-zinc-800 shrink-0">
+                    {user?.image ? (
+                      <Image
+                        src={user.image}
+                        alt={user.name}
+                        height={36}
+                        width={36}
+                        className="object-cover h-full w-full"
+                      />
+                    ) : (
+                      <Avatar className="h-full w-full rounded-none">
+                        <AvatarFallback className="bg-amber-400 text-black font-black text-xs uppercase">
+                          {user?.name?.substring(0, 2) || "VD"}
+                        </AvatarFallback>
+                      </Avatar>
+                    )}
+                  </div>
 
                   <div className="flex flex-col flex-1 text-left overflow-hidden">
                     <span className="text-sm font-bold text-zinc-100 truncate group-hover:text-amber-400 transition-colors">

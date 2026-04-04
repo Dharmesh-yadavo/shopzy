@@ -115,6 +115,7 @@ export const getVendorsOrders = async () => {
       id: item.id,
       actualOrderId: item.order.id,
       buyer: item.order.address.name,
+      buyerId: item.order.buyerId,
       phone: item.order.address.phone,
       product: item.product.title,
       payment: item.order.paymentMethod,
@@ -125,5 +126,43 @@ export const getVendorsOrders = async () => {
   } catch (error) {
     console.error("GET_VENDOR_ORDERS_ERROR:", error);
     return [];
+  }
+};
+
+export const vendorStats = async (vendorId: string) => {
+  try {
+    // 1. Total Products
+    const totalProducts = await prisma.product.count({
+      where: { vendorId },
+    });
+
+    // 2. Get the orders to calculate sales and customers
+    const totalOrders = await getVendorsOrders();
+
+    if (!totalOrders) return null;
+
+    // 3. Calculate Total Sales
+    const totalSales = totalOrders.reduce((acc, order) => acc + order.total, 0);
+
+    // 4. Find Unique Customers (using buyerId)
+    const uniqueCustomerIds = new Set(
+      totalOrders.map((order) => order.buyerId),
+    );
+    const totalCustomers = uniqueCustomerIds.size;
+
+    return {
+      totalProducts,
+      totalOrders: totalOrders.length,
+      totalSales,
+      totalCustomers,
+    };
+  } catch (error) {
+    console.error("VENDOR_STATS_ERROR:", error);
+    return {
+      totalProducts: 0,
+      totalOrders: 0,
+      totalSales: 0,
+      totalCustomers: 0,
+    };
   }
 };

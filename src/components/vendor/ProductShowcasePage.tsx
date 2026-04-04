@@ -61,27 +61,6 @@ export const ProductShowcasePage = ({
           </Link>
         </div>
 
-        <div className="flex items-center justify-between p-4 bg-zinc-900/40 border border-zinc-800 rounded-xl">
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
-            >
-              <Filter className="mr-2 h-4 w-4" /> Filter
-            </Button>
-            <Button
-              variant="outline"
-              className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700"
-            >
-              <ArrowUpDown className="mr-2 h-4 w-4" /> Sort: Newest
-            </Button>
-          </div>
-          <span className="text-zinc-500 text-xs font-medium">
-            Showing <span className="text-white">{products.length}</span>{" "}
-            products
-          </span>
-        </div>
-
         <div className="w-full rounded-xl border border-zinc-800 bg-zinc-900/20 overflow-hidden">
           <Table className="w-full border-collapse">
             <TableHeader className="bg-zinc-900/60 border-b border-zinc-800">

@@ -1,41 +1,48 @@
 // components/vendor/StatsGrid.tsx
 import { Users, Package, ShoppingCart, IndianRupee } from "lucide-react";
 
-const stats = [
-  {
-    label: "CUSTOMERS",
-    value: "3",
-    icon: Users,
-    progress: 30,
-    color: "text-blue-400",
-  },
-  {
-    label: "PRODUCTS",
-    value: "3",
-    icon: Package,
-    progress: 15,
-    color: "text-amber-400",
-  },
-  {
-    label: "ORDERS",
-    value: "8",
-    icon: ShoppingCart,
-    progress: 60,
-    color: "text-green-400",
-  },
-  {
-    label: "SALES",
-    value: "₹ 480,970",
-    icon: IndianRupee,
-    progress: 85,
-    color: "text-purple-400",
-  },
-];
+interface StatsType {
+  totalProducts: number;
+  totalOrders: number;
+  totalSales: number;
+  totalCustomers: number;
+}
 
-export const StatsGrid = () => {
+export const StatsGrid = ({ stats }: { stats: StatsType }) => {
+  //
+  const statsItems = [
+    {
+      label: "CUSTOMERS",
+      value: "3",
+      icon: Users,
+      progress: stats.totalCustomers,
+      color: "text-blue-400",
+    },
+    {
+      label: "PRODUCTS",
+      value: "3",
+      icon: Package,
+      progress: stats.totalProducts,
+      color: "text-amber-400",
+    },
+    {
+      label: "ORDERS",
+      value: "8",
+      icon: ShoppingCart,
+      progress: stats.totalOrders,
+      color: "text-green-400",
+    },
+    {
+      label: "SALES",
+      value: `₹ ${stats.totalSales}`,
+      icon: IndianRupee,
+      progress: 85,
+      color: "text-purple-400",
+    },
+  ];
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      {stats.map((stat) => (
+      {statsItems.map((stat) => (
         <div
           key={stat.label}
           className="bg-zinc-900/40 border border-zinc-800 p-5 rounded-xl hover:bg-zinc-900 transition-all"
