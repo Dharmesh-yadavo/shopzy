@@ -9,10 +9,13 @@ const Orderspage = async () => {
   if (!orders) return null;
 
   const flattenedOrders = orders.flatMap((order) =>
-    order.items.map((item) => ({
-      ...item,
-      order,
-    })),
+    order.items
+      .filter((item) => item.color !== null)
+      .map((item) => ({
+        ...item,
+        color: item.color as string,
+        order,
+      })),
   );
 
   return <OrdersComp orders={flattenedOrders} />;

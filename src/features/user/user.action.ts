@@ -281,3 +281,38 @@ export const updateUserNotifications = async (
     return null;
   }
 };
+
+export const rateProductAction = async ({
+  productId,
+  rating,
+  comment,
+}: {
+  productId: string;
+  rating: string;
+  comment: string;
+}) => {
+  try {
+    const user = await getCurrentUser();
+
+    if (!user) return { status: "error", message: "User not authenticated." };
+
+    await prisma.product.update({
+      where: {
+        id: productId,
+      },
+      data: {
+        reviews: {
+          userId: user.id,
+          userName: user.name,
+          rating: parseInt(rating),
+          comment,
+        },
+      },
+    });
+
+    return { status: "success", message: "Thank you for your review!" };
+  } catch (error) {
+    console.error(error);
+    return { status: "error", message: "Something went wrong." };
+  }
+};

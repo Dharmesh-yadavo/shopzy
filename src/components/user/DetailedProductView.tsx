@@ -574,11 +574,6 @@ export const DetailedProductView = ({
                   </div>
 
                   <div className="pl-14 space-y-3">
-                    <h5 className="text-white font-bold text-md leading-snug">
-                      {review.rating >= 4
-                        ? "Excellent Product"
-                        : "Product Feedback"}
-                    </h5>
                     <p className="text-zinc-400 text-sm leading-relaxed max-w-3xl">
                       {review.comment ||
                         "Great purchase, highly satisfied with the performance."}
