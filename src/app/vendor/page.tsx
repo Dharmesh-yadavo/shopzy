@@ -12,6 +12,8 @@ const VendorHome = async () => {
 
   const stats = await vendorStats(vendor.id);
 
+  if (!stats) redirect("/login");
+
   return (
     <div className="flex flex-col flex-1 w-full min-h-screen p-4 lg:p-8">
       {/* 1. Header with detailed vendor info */}
