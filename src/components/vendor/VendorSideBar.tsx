@@ -17,7 +17,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { usePathname } from "next/navigation";
 import {
   ChevronsUpDown,
@@ -66,8 +66,6 @@ export const VendorSidebar = ({ user }: { user: UserDataType }) => {
       icon: ClipboardList,
     },
   ];
-
-  const layoutName: string = "Vendor Dashboard";
 
   const handleLogout = async () => {
     return await handleUserLogoutAction();

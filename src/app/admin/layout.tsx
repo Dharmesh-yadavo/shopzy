@@ -14,7 +14,7 @@ const AdminLayout = async ({ children }: { children: React.ReactNode }) => {
 
   return (
     <SidebarProvider>
-      <AdminSidebar />
+      <AdminSidebar user={user} />
       <section className="flex-1 flex flex-col min-h-screen overflow-x-hidden p-2">
         <SidebarTrigger className="hover:bg-amber-400" />
         {children}

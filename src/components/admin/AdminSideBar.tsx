@@ -10,7 +10,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 import { usePathname } from "next/navigation";
 import { IconType } from "react-icons";
 import {
@@ -20,6 +20,7 @@ import {
   AiOutlineMessage,
 } from "react-icons/ai";
 import { TbLayoutDashboard, TbShoppingBag } from "react-icons/tb";
+import Image from "next/image";
 
 export interface SidebarItem {
   title: string;
@@ -27,7 +28,14 @@ export interface SidebarItem {
   icon: IconType;
 }
 
-export const AdminSidebar = () => {
+interface UserDataType {
+  name: string;
+  email: string;
+  role: "admin" | "vendor" | "user";
+  image: string | null;
+}
+
+export const AdminSidebar = ({ user }: { user: UserDataType }) => {
   const pathName = usePathname();
 
   const items: SidebarItem[] = [
@@ -56,11 +64,11 @@ export const AdminSidebar = () => {
       url: "/admin/requests",
       icon: AiOutlineMessage,
     },
-    {
-      title: "Settings",
-      url: "/admin/settings",
-      icon: AiOutlineSetting,
-    },
+    // {
+    //   title: "Settings",
+    //   url: "/admin/settings",
+    //   icon: AiOutlineSetting,
+    // },
   ];
 
   const layoutName: string = "Admin Dashboard";
@@ -116,20 +124,42 @@ export const AdminSidebar = () => {
       {/* will have to pass details here  */}
 
       <SidebarFooter className="p-4">
-        <div className="flex items-center gap-3 px-3 py-3 bg-zinc-900/50 rounded-xl border border-zinc-800/50">
-          <Avatar className="h-10 w-10 border-2 border-amber-400/20">
-            <AvatarImage src="https://github.com/shadcn.png" />
-            <AvatarFallback className="bg-amber-400 text-black font-bold">
-              AS
-            </AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col overflow-hidden">
-            <span className="text-sm font-bold text-white truncate">
-              Alex Sterling
-            </span>
-            <span className="text-xs text-zinc-500 truncate">Super Admin</span>
-          </div>
-        </div>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              variant="default"
+              size="lg"
+              className="w-full flex items-center gap-3 p-2 rounded-xl border border-zinc-800/50 bg-zinc-900/30 hover:bg-zinc-800/50 hover:border-amber-400/20 transition-all duration-300 group"
+            >
+              <div className="h-9 w-9 rounded-xl overflow-hidden border border-zinc-800 shrink-0">
+                {user?.image ? (
+                  <Image
+                    src={user.image}
+                    alt={user.name}
+                    height={36}
+                    width={36}
+                    className="object-cover h-full w-full"
+                  />
+                ) : (
+                  <Avatar className="h-full w-full rounded-none">
+                    <AvatarFallback className="bg-amber-400 text-black font-black text-xs uppercase">
+                      {user?.name?.substring(0, 2) || "VD"}
+                    </AvatarFallback>
+                  </Avatar>
+                )}
+              </div>
+
+              <div className="flex flex-col flex-1 text-left overflow-hidden">
+                <span className="text-sm font-bold text-zinc-100 truncate group-hover:text-amber-400 transition-colors">
+                  {user?.name || "Alex Sterling"}
+                </span>
+                <span className="text-[10px] text-zinc-500 font-medium  tracking-wider truncate">
+                  {user?.email}
+                </span>
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   );

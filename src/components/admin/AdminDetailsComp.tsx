@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/table";
 import { Product } from "@prisma/client";
 
-import { useState } from "react";
 import AdminDetailsDialog from "./AdminDetailsDialog";
 
 interface VendorDataType {
