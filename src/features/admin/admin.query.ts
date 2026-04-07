@@ -47,3 +47,16 @@ export const getAdminAllOrders = async () => {
     return [];
   }
 };
+
+export const getAllVendors = async () => {
+  try {
+    return await prisma.user.findMany({
+      where: {
+        role: "vendor",
+      },
+      include: { products: true },
+    });
+  } catch (error) {
+    console.error(error);
+  }
+};

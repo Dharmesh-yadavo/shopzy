@@ -28,7 +28,7 @@ interface OrderDataType {
     | "delivered"
     | "returned"
     | "cancelled";
-  date: string;
+  date: Date;
 }
 
 export const AdminUserOrders = ({
