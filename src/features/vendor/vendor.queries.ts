@@ -166,3 +166,81 @@ export const vendorStats = async (vendorId: string) => {
     };
   }
 };
+
+export const barChartContent = async (vendorId: string) => {
+  try {
+    const orderItems = await prisma.orderItem.findMany({
+      where: {
+        product: {
+          vendorId: vendorId,
+        },
+      },
+      include: {
+        order: {
+          select: { createdAt: true },
+        },
+      },
+    });
+
+    const chartDataMap = orderItems.reduce(
+      (
+        acc: Record<string, { date: string; count: number; revenue: number }>,
+        item,
+      ) => {
+        const date = item.order.createdAt.toISOString().split("T")[0];
+
+        if (!acc[date]) {
+          acc[date] = { date, count: 0, revenue: 0 };
+        }
+
+        acc[date].count += item.quantity;
+        acc[date].revenue += item.price * item.quantity;
+        return acc;
+      },
+      {},
+    );
+
+    const finalChartData = Object.values(chartDataMap);
+
+    return finalChartData;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const pieChartContent = async (vendorId: string) => {
+  try {
+    const orderItems = await prisma.orderItem.findMany({
+      where: {
+        product: {
+          vendorId: vendorId,
+        },
+      },
+      include: {
+        order: {
+          select: { orderStatus: true },
+        },
+      },
+    });
+
+    const dataMap = orderItems.reduce(
+      (acc: Record<string, { status: string; count: number }>, item) => {
+        const status = item.order.orderStatus;
+
+        if (!acc[status]) {
+          acc[status] = { status, count: 0 };
+        }
+
+        acc[status].count += item.quantity;
+        return acc;
+      },
+      {},
+    );
+
+    const finalPieChartData = Object.values(dataMap);
+
+    return finalPieChartData;
+  } catch (error) {
+    console.error(error);
+  }
+};

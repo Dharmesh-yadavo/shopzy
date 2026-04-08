@@ -1,8 +1,13 @@
-import { AlertSection } from "@/components/vendor/AlertSection";
+import BarChartComp from "@/components/vendor/BarChartComp";
+import { PieChartComp } from "@/components/vendor/PieChartComp";
 import { StatsGrid } from "@/components/vendor/StatsGrid";
 import { VendorDashboardHeader } from "@/components/vendor/VendorDashboardHeader";
 import { getCurrentUser } from "@/features/auth/auth.queries";
-import { vendorStats } from "@/features/vendor/vendor.queries";
+import {
+  barChartContent,
+  pieChartContent,
+  vendorStats,
+} from "@/features/vendor/vendor.queries";
 import { redirect } from "next/navigation";
 
 const VendorHome = async () => {
@@ -11,6 +16,12 @@ const VendorHome = async () => {
   if (!vendor) redirect("/login");
 
   const stats = await vendorStats(vendor.id);
+
+  const barData = await barChartContent(vendor.id);
+
+  const pieData = await pieChartContent(vendor.id);
+
+  console.log("PieData", pieData);
 
   if (!stats) redirect("/login");
 
@@ -28,7 +39,7 @@ const VendorHome = async () => {
       <StatsGrid stats={stats} />
 
       {/* 3. Urgent notifications & Quick sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <AlertSection />
         </div>
@@ -40,6 +51,15 @@ const VendorHome = async () => {
             increase your sales by 12% this week.
           </p>
         </div>
+      </div> */}
+
+      {/* Barcharts:  */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
+        {/* Order-By-Date Bar Graph */}
+        {barData && <BarChartComp data={barData} />}
+
+        {/*  */}
+        {pieData && <PieChartComp data={pieData} />}
       </div>
     </div>
   );
