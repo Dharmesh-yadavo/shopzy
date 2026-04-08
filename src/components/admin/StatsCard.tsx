@@ -21,12 +21,27 @@ interface StatItems {
   highlight: boolean;
 }
 
-const StatsCard = () => {
+interface StatsDataType {
+  totalVendors: number | undefined;
+  pendingVendors: number | undefined;
+  totalProducts: number | undefined;
+  pendingProducts: number | undefined;
+  totalOrders: number | undefined;
+  totalEarnings: number | undefined;
+}
+
+const StatsCard = ({ data }: { data: StatsDataType }) => {
+  const formattedEarnings = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0, // Set to 2 if you want to show paisa
+  }).format(data.totalEarnings ?? 0);
+
   const statDetails: StatItems[] = [
     {
       icon: Users,
       label: "Total Vendors",
-      value: "3",
+      value: `${data.totalVendors}`,
       trend: "+2%",
       trendColor: "text-green-400", // Added default trend color
       iconBg: "bg-blue-500/20 text-blue-400",
@@ -35,7 +50,7 @@ const StatsCard = () => {
     {
       icon: ClipboardList,
       label: "Pending Vendors",
-      value: "12",
+      value: `${data.pendingVendors}`,
       trend: "+5%",
       trendColor: "text-green-400",
       iconBg: "bg-yellow-500/20 text-yellow-400",
@@ -44,7 +59,7 @@ const StatsCard = () => {
     {
       icon: Package,
       label: "Total Products",
-      value: "450",
+      value: `${data.totalProducts}`,
       trend: "-1%",
       trendColor: "text-red-400",
       iconBg: "bg-purple-500/20 text-purple-400",
@@ -53,7 +68,7 @@ const StatsCard = () => {
     {
       icon: AlertOctagon,
       label: "Pending Products",
-      value: "8",
+      value: `${data.pendingVendors}`,
       trend: "-10%",
       trendColor: "text-red-400",
       iconBg: "bg-orange-500/20 text-orange-400",
@@ -62,7 +77,7 @@ const StatsCard = () => {
     {
       icon: ShoppingBag,
       label: "Total Orders",
-      value: "14",
+      value: `${data.totalOrders}`,
       trend: "+12%",
       trendColor: "text-green-400",
       iconBg: "bg-teal-500/20 text-teal-400",
@@ -71,7 +86,7 @@ const StatsCard = () => {
     {
       icon: Wallet,
       label: "Total Earnings",
-      value: "₹ 59,885",
+      value: formattedEarnings,
       trend: "+18%",
       trendColor: "text-green-400",
       iconBg: "bg-yellow-500/20 text-yellow-400",

@@ -14,6 +14,14 @@ interface PieDataType {
   count: number;
 }
 
+interface TooltipProps {
+  active?: boolean;
+  payload?: Array<{
+    name: string;
+    value: number;
+  }>;
+}
+
 // Define specific colors for your order statuses
 const STATUS_COLORS: Record<string, string> = {
   delivered: "#10b981", // Emerald-500
@@ -23,7 +31,7 @@ const STATUS_COLORS: Record<string, string> = {
   shipped: "#0ea5e9", // Sky-500
 };
 
-const CustomTooltip = ({ active, payload }: any) => {
+const CustomTooltip = ({ active, payload }: TooltipProps) => {
   if (active && payload && payload.length) {
     return (
       <div className="bg-zinc-950 border border-zinc-800 p-2 px-3 rounded-lg shadow-2xl backdrop-blur-md">
