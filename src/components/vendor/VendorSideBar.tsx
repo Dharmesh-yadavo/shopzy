@@ -26,6 +26,7 @@ import {
   LogOut,
   LucideIcon,
   Package,
+  Phone,
   Store,
   User,
 } from "lucide-react";
@@ -64,6 +65,11 @@ export const VendorSidebar = ({ user }: { user: UserDataType }) => {
       title: "Orders",
       url: "/vendor/orders",
       icon: ClipboardList,
+    },
+    {
+      title: "Support",
+      url: "/support",
+      icon: Phone,
     },
   ];
 

@@ -1,6 +1,6 @@
 // components/vendor/DashboardHeader.tsx
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Phone } from "lucide-react";
+import { Phone, Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -67,13 +67,13 @@ export const VendorDashboardHeader = ({
         {/* Action Buttons */}
         <div className="flex gap-3 w-full md:w-auto">
           <Link href="/vendor/add-product" className="flex-1 md:flex-none">
-            <button className="w-full bg-amber-400 text-black px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-amber-300 transition-all active:scale-95 shadow-xl shadow-amber-400/10">
-              + Add Product
+            <button className="flex items-center gap-1 w-full bg-amber-400 text-black px-4 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-amber-300 transition-all active:scale-95 shadow-xl shadow-amber-400/10">
+              <Plus size={15} /> Add Product
             </button>
           </Link>
-          <Link href="/support" className="flex-1 md:flex-none">
-            <button className="flex items-center gap-3  w-full bg-zinc-900 text-zinc-100 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all border border-zinc-800 active:scale-95">
-              <Phone size={16} /> Support
+          <Link href="/vendor/profile" className="flex-1 md:flex-none">
+            <button className="w-full bg-zinc-900 text-zinc-100 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all border border-zinc-800 active:scale-95">
+              Settings
             </button>
           </Link>
         </div>
