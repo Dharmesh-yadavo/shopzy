@@ -34,11 +34,48 @@ model User {
   products    Product[]    
   cart        CartItem[]
   order       Order[]
+
+  // Chat part 
+  // Relations for the "Chat Room"
+  chatsCreated        Chat[]    @relation("CreatedBy")
+  chatsAsParticipant  Chat[]    @relation("ReceivedBy")
+  
+  // Relation for the actual messages typed
+  messages    Message[]    @relation("UserMessages")
   
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
 
   @@map("users")
+}
+
+model Chat {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  
+  creator       User      @relation("CreatedBy", fields: [creatorId], references: [id])
+  creatorId     String    @db.ObjectId
+
+  participant   User      @relation("ReceivedBy", fields: [participantId], references: [id])
+  participantId String    @db.ObjectId
+
+  messages      Message[]
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Message {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  text      String
+  createdAt DateTime @default(now())
+
+  // Who wrote the message? (Can be the User OR the Vendor)
+  sender    User     @relation("UserMessages", fields: [senderId], references: [id])
+  senderId  String   @db.ObjectId
+
+  // Which chat does this message belong to?
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  chatId    String   @db.ObjectId
 }
 
 model Order {

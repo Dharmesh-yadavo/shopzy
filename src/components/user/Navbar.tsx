@@ -11,6 +11,7 @@ import {
   Package,
   Settings,
   ChevronDown,
+  Phone,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
@@ -67,6 +68,16 @@ const Navbar = ({ user, cart }: { user: UserType; cart: CartItem[] }) => {
         </form>
 
         <div className="flex items-center gap-2 md:gap-4">
+          <Link
+            href="/support"
+            className="p-2.5 rounded-xl hidden sm:flex hover:bg-white/5 text-stone-400 hover:text-yellow-400 transition-all group relative"
+          >
+            <Phone
+              size={22}
+              className="group-hover:scale-110 transition-transform"
+            />
+          </Link>
+
           <Link
             href="/cart"
             className="p-2.5 rounded-xl hidden sm:flex hover:bg-white/5 text-stone-400 hover:text-yellow-400 transition-all group relative"
@@ -164,6 +175,18 @@ const Navbar = ({ user, cart }: { user: UserType; cart: CartItem[] }) => {
                     className="flex items-center gap-3 px-2 py-2.5"
                   >
                     <Package size={16} /> My Orders
+                  </Link>
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  asChild
+                  className="sm:hidden focus:bg-stone-800 focus:text-yellow-400 rounded-xl cursor-pointer"
+                >
+                  <Link
+                    href="/support"
+                    className="flex items-center gap-3 px-2 py-2.5"
+                  >
+                    <Phone size={16} /> Support
                   </Link>
                 </DropdownMenuItem>
 
