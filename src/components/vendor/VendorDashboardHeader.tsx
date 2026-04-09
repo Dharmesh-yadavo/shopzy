@@ -1,5 +1,6 @@
 // components/vendor/DashboardHeader.tsx
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Phone } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -70,9 +71,9 @@ export const VendorDashboardHeader = ({
               + Add Product
             </button>
           </Link>
-          <Link href="/vendor/profile" className="flex-1 md:flex-none">
-            <button className="w-full bg-zinc-900 text-zinc-100 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all border border-zinc-800 active:scale-95">
-              Settings
+          <Link href="/support" className="flex-1 md:flex-none">
+            <button className="flex items-center gap-3  w-full bg-zinc-900 text-zinc-100 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-all border border-zinc-800 active:scale-95">
+              <Phone size={16} /> Support
             </button>
           </Link>
         </div>

@@ -1,6 +1,6 @@
-import ChatClient from "@/components/user/ChatClient";
+import ChatClient from "@/components/chat/ChatClient";
 import { getCurrentUser } from "@/features/auth/auth.queries";
-import { getSupportUsers } from "@/features/user/user.query";
+import { getSupportUsers } from "@/features/chat/chat.queries";
 import { redirect } from "next/navigation";
 
 const page = async () => {
@@ -11,8 +11,6 @@ const page = async () => {
   const data = await getSupportUsers(user?.id, user?.role);
 
   if (!data) return [];
-
-  console.log("DATA", data);
 
   return (
     <div>

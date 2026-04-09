@@ -38,21 +38,6 @@ const VendorHome = async () => {
       {/* 2. Stats Grid with visual progress bars */}
       <StatsGrid stats={stats} />
 
-      {/* 3. Urgent notifications & Quick sections */}
-      {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <AlertSection />
-        </div>
-        <div className="bg-amber-400/5 border border-amber-400/10 p-6 rounded-xl">
-          <h3 className="text-amber-400 font-bold mb-2">Vendor Tip 💡</h3>
-          <p className="text-zinc-400 text-sm leading-relaxed">
-            Your electronics are trending! Offering a{" "}
-            <span className="text-amber-400 font-bold">5% discount</span> could
-            increase your sales by 12% this week.
-          </p>
-        </div>
-      </div> */}
-
       {/* Barcharts:  */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full">
         {/* Order-By-Date Bar Graph */}

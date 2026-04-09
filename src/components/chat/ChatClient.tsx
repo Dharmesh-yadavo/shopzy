@@ -2,13 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Send, Bot, ChevronLeft, Sparkles, MessageSquare } from "lucide-react";
-
-// shadcn/ui imports (assuming you have these installed)
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { sendMessageAction } from "@/features/user/user.action";
+import { sendMessageAction } from "@/features/chat/chat.action";
 
 type Role = "user" | "vendor" | "admin";
 
@@ -143,9 +141,14 @@ export default function ChatClient({
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col items-start overflow-hidden">
-                  <span className="font-semibold text-sm truncate w-full text-left">
+                  <span className="font-semibold text-sm truncate w-full text-left text-zinc-100 group-hover:text-white transition-colors">
                     {user.name}
                   </span>
+                  {user.role === "admin" && (
+                    <p className="text-[9px] pt-0.5 font-black  uppercase  text-amber-400 leading-none">
+                      {user.role}
+                    </p>
+                  )}
                 </div>
               </button>
             ))}
