@@ -21,6 +21,7 @@ import {
 } from "react-icons/ai";
 import { TbLayoutDashboard, TbShoppingBag } from "react-icons/tb";
 import Image from "next/image";
+import { Phone } from "lucide-react";
 
 export interface SidebarItem {
   title: string;
@@ -64,11 +65,11 @@ export const AdminSidebar = ({ user }: { user: UserDataType }) => {
       url: "/admin/requests",
       icon: AiOutlineMessage,
     },
-    // {
-    //   title: "Settings",
-    //   url: "/admin/settings",
-    //   icon: AiOutlineSetting,
-    // },
+    {
+      title: "Support",
+      url: "/support",
+      icon: Phone,
+    },
   ];
 
   const layoutName: string = "Admin Dashboard";

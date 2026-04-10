@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { sendMessageAction } from "@/features/chat/chat.action";
+import { markAsRead, sendMessageAction } from "@/features/chat/chat.action";
 
 type Role = "user" | "vendor" | "admin";
 
@@ -22,6 +22,13 @@ interface SupportUser {
   name: string;
   image?: string;
   role?: Role;
+  chat: {
+    id: string;
+    updatedAt: Date;
+    lastMessageText: string | null;
+    unreadCount: number;
+    lastMessageBy: string | null;
+  };
 }
 
 interface ChatClientProps {
@@ -95,7 +102,6 @@ export default function ChatClient({
     );
 
     if (!result.success) {
-      // Handle error (e.g., show a toast or remove the optimistic message)
       console.error(result.error);
     }
   };
@@ -117,41 +123,53 @@ export default function ChatClient({
 
         <ScrollArea className="flex-1 px-3">
           <div className="space-y-1 pb-4">
-            {supportUsers?.map((user) => (
-              <button
-                key={user.id}
-                onClick={() => {
-                  setActiveUser(user);
-                  setNewMessages([]);
-                }}
-                className={`w-full p-3 flex items-center gap-3 rounded-xl transition-all duration-200 group ${
-                  activeUser?.id === user.id
-                    ? "bg-zinc-800/80 shadow-lg"
-                    : "hover:bg-zinc-900"
-                }`}
-              >
-                <Avatar className="h-12 w-12 border border-zinc-700">
-                  <AvatarImage
-                    src={user.image}
-                    alt={user.name}
-                    className="p-0.5 object-cover rounded-4xl"
-                  />
-                  <AvatarFallback className="bg-zinc-800 text-zinc-400">
-                    {user.name.slice(0, 2).toUpperCase()}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex flex-col items-start overflow-hidden">
-                  <span className="font-semibold text-sm truncate w-full text-left text-zinc-100 group-hover:text-white transition-colors">
-                    {user.name}
-                  </span>
-                  {user.role === "admin" && (
-                    <p className="text-[9px] pt-0.5 font-black  uppercase  text-amber-400 leading-none">
-                      {user.role}
-                    </p>
+            {supportUsers?.map((user) => {
+              const hasNotification =
+                user.chat?.lastMessageBy !== currentUserId &&
+                user.chat?.unreadCount > 0;
+
+              return (
+                <button
+                  key={user.id}
+                  onClick={() => {
+                    setActiveUser(user);
+                    if (hasNotification) markAsRead(user.chat.id); // Clear dot on click
+                  }}
+                  className="relative w-full p-3 flex items-center gap-3 ..."
+                >
+                  <Avatar className="h-12 w-12 border border-zinc-700">
+                    <AvatarImage
+                      src={user.image}
+                      alt={user.name}
+                      className="p-0.5 object-cover rounded-4xl"
+                    />
+
+                    <AvatarFallback className="bg-zinc-800 text-zinc-400">
+                      {user.name?.slice(0, 2).toUpperCase()}
+                    </AvatarFallback>
+                  </Avatar>
+
+                  <div className="flex-1 text-left">
+                    <span className="font-semibold block">{user.name}</span>
+                    {user.role === "admin" && (
+                      <p className="text-[9px] pt-0.5 font-black  uppercase  text-amber-400 leading-none">
+                        {user.role}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* THE NOTIFICATION DOT */}
+                  {hasNotification && (
+                    <div className="absolute right-4 flex items-center justify-center">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
+                      </span>
+                    </div>
                   )}
-                </div>
-              </button>
-            ))}
+                </button>
+              );
+            })}
           </div>
         </ScrollArea>
       </aside>

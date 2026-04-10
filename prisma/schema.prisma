@@ -59,6 +59,11 @@ model Chat {
   participantId String    @db.ObjectId
 
   messages      Message[]
+
+  // for notification
+  lastMessageText String?   
+  unreadCount     Int       @default(0)
+  lastMessageBy   String?   @db.ObjectId 
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

@@ -12,6 +12,8 @@ const page = async () => {
 
   if (!data) return [];
 
+  console.log("SUPPORT USER DATA: ", data);
+
   return (
     <div>
       <ChatClient supportUsers={data} currentUserId={user?.id} />

@@ -28,18 +28,39 @@ export async function sendMessageAction(
     }
 
     // 2. Save the message to that chat
-    const newMessage = await prisma.message.create({
-      data: {
-        text,
-        senderId: senderId,
-        chatId: chat.id,
-      },
-    });
+    const newMessage = await prisma.$transaction([
+      prisma.message.create({
+        data: { text, senderId, chatId: chat.id },
+      }),
+      prisma.chat.update({
+        where: { id: chat.id },
+        data: {
+          lastMessageText: text,
+          lastMessageBy: senderId,
+          unreadCount: 1,
+          updatedAt: new Date(),
+        },
+      }),
+    ]);
 
     revalidatePath("/support");
     return { success: true, message: newMessage };
   } catch (error) {
     console.error("DB_SAVE_ERROR", error);
     return { success: false, error: "Failed to send message" };
+  }
+}
+
+export async function markAsRead(chatId: string) {
+  try {
+    await prisma.chat.update({
+      where: { id: chatId },
+      data: { unreadCount: 0 },
+    });
+    revalidatePath("/support");
+    return { success: true };
+  } catch (error) {
+    console.error(error);
+    return { success: false };
   }
 }
