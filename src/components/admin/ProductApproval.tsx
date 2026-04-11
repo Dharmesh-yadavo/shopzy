@@ -48,8 +48,8 @@ interface ProductTableType {
     imageUrl: string;
   }[];
   detailsPoints: string[];
-  createdAt: Date;
-  approvedAt: Date;
+  createdAt: Date | null;
+  approvedAt: Date | null;
   verificationStatus: "pending" | "approved" | "rejected";
 }
 
@@ -223,7 +223,7 @@ export const ProductApproval = ({
                     </Badge>
                   </TableCell>
                   <TableCell className="text-xs font-medium text-stone-400">
-                    {new Date(request.createdAt).toLocaleDateString()}
+                    {new Date(request.createdAt!).toLocaleDateString()}
                   </TableCell>
                   <TableCell>
                     <span
