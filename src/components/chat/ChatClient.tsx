@@ -8,8 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { markAsRead, sendMessageAction } from "@/features/chat/chat.action";
 
-type Role = "user" | "vendor" | "admin";
-
 interface Message {
   id: string;
   text: string;
@@ -21,7 +19,7 @@ interface SupportUser {
   id: string;
   name: string;
   image?: string;
-  role?: Role;
+  role?: "user" | "vendor" | "admin";
   chat: {
     id: string;
     updatedAt: Date;
@@ -43,9 +41,17 @@ export default function ChatClient({
   const [activeUser, setActiveUser] = useState<SupportUser | null>(null);
   const [message, setMessage] = useState("");
   const [newMessages, setNewMessages] = useState<Message[]>([]);
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  // scroll part for messages
+  const scrollEndRef = useRef<HTMLDivElement>(null);
+  const scrollToBottom = () => {
+    scrollEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+  useEffect(() => {
+    scrollToBottom();
+  }, [newMessages, chatHistory, isLoading]);
 
   // fetching old messages
   useEffect(() => {
@@ -69,13 +75,6 @@ export default function ChatClient({
 
     fetchHistory();
   }, [activeUser]);
-
-  // Auto-scroll to bottom for new message
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [newMessages]);
 
   // Submiting the message
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -106,6 +105,21 @@ export default function ChatClient({
     }
   };
 
+  // First chat (sorting users):
+  const finalSupportUsers = supportUsers.sort((a, b) => {
+    const timeA = a.chat?.updatedAt ? new Date(a.chat.updatedAt).getTime() : 0;
+    const timeB = b.chat?.updatedAt ? new Date(b.chat.updatedAt).getTime() : 0;
+
+    const hasUnreadA = (a.chat?.unreadCount ?? 0) > 0 ? 1 : 0;
+    const hasUnreadB = (b.chat?.unreadCount ?? 0) > 0 ? 1 : 0;
+
+    if (hasUnreadA !== hasUnreadB) {
+      return hasUnreadB - hasUnreadA;
+    }
+
+    return timeB - timeA;
+  });
+
   return (
     <div className="flex h-screen bg-black text-zinc-100 overflow-hidden font-sans">
       {/* --- SIDEBAR --- */}
@@ -123,10 +137,12 @@ export default function ChatClient({
 
         <ScrollArea className="flex-1 px-3">
           <div className="space-y-1 pb-4">
-            {supportUsers?.map((user) => {
+            {finalSupportUsers?.map((user) => {
               const hasNotification =
                 user.chat?.lastMessageBy !== currentUserId &&
                 user.chat?.unreadCount > 0;
+
+              console.log("USER: ", user);
 
               return (
                 <button
@@ -249,7 +265,11 @@ export default function ChatClient({
                         </span>
                       </div>
                     ))}
-                    <div ref={scrollRef} />
+                    <div
+                      title="scroll-anchor"
+                      ref={scrollEndRef}
+                      className="h-2"
+                    />
                   </div>
                 </div>
               </ScrollArea>

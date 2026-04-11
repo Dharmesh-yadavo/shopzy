@@ -23,6 +23,7 @@ export async function sendMessageAction(
         data: {
           creatorId: senderId,
           participantId: receiverId,
+          updatedAt: new Date(),
         },
       });
     }

@@ -119,11 +119,6 @@ export const getSupportUsers = async (
             },
           },
         },
-        orderBy: {
-          order: {
-            createdAt: "desc",
-          },
-        },
       });
 
       const formatedOrders = orders.map((user) => {
