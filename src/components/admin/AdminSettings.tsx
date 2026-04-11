@@ -11,9 +11,18 @@ import {
 import Image from "next/image";
 import { Camera, Mail, Phone, Save, UserCircle } from "lucide-react";
 import { Input } from "../ui/input";
-import { User } from "@prisma/client";
 
-const AdminSettings = ({ user }: { user: User }) => {
+type UserDataType = {
+  name: string;
+  id: string;
+  email: string;
+  phone: string | null;
+  image: string | null;
+  role: "vendor" | "user" | "admin";
+};
+
+const AdminSettings = ({ user }: { user: UserDataType }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [imagePreview, setImagePreview] = useState("");
 
   return (

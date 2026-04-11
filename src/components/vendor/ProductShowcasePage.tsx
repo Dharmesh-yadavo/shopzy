@@ -10,8 +10,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import {
   Package,
-  Filter,
-  ArrowUpDown,
   Plus,
   //   Image as ImageIcon,
 } from "lucide-react";

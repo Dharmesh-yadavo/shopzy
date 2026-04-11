@@ -1,6 +1,6 @@
 // components/vendor/DashboardHeader.tsx
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Phone, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 

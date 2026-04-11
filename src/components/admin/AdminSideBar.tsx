@@ -16,7 +16,6 @@ import { IconType } from "react-icons";
 import {
   AiOutlineShop,
   AiOutlineCheckCircle,
-  AiOutlineSetting,
   AiOutlineMessage,
 } from "react-icons/ai";
 import { TbLayoutDashboard, TbShoppingBag } from "react-icons/tb";

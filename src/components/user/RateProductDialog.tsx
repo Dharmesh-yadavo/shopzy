@@ -11,7 +11,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { Star, Camera, Loader2, StarHalf } from "lucide-react";
+import { Star, Loader2 } from "lucide-react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { rateProductAction } from "@/features/user/user.action";
