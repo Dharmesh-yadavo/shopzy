@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     event = stripe.webhooks.constructEvent(
       body,
       signature,
-      process.env.STRIPE_WEBHOOK_SECRET!, // Get this from Stripe CLI or Dashboard
+      process.env.STRIPE_WEBHOOK_KEY!,
     );
   } catch (err) {
     console.error(err);
