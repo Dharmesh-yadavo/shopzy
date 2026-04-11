@@ -7,6 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { markAsRead, sendMessageAction } from "@/features/chat/chat.action";
+import { getAiSuggestions } from "@/features/chat/aiSuggestions";
 
 interface Message {
   id: string;
@@ -31,11 +32,13 @@ interface SupportUser {
 
 interface ChatClientProps {
   supportUsers: SupportUser[];
+  currentUerRole: "user" | "vendor" | "admin";
   currentUserId: string;
 }
 
 export default function ChatClient({
   supportUsers,
+  currentUerRole,
   currentUserId,
 }: ChatClientProps) {
   const [activeUser, setActiveUser] = useState<SupportUser | null>(null);
@@ -43,6 +46,8 @@ export default function ChatClient({
   const [newMessages, setNewMessages] = useState<Message[]>([]);
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   // scroll part for messages
   const scrollEndRef = useRef<HTMLDivElement>(null);
@@ -51,7 +56,34 @@ export default function ChatClient({
   };
   useEffect(() => {
     scrollToBottom();
-  }, [newMessages, chatHistory, isLoading]);
+  }, [suggestions, loadingSuggestions, newMessages, chatHistory, isLoading]);
+
+  // ai suggestion api call
+  const fetchSuggestions = async (
+    message: string,
+    role: "user" | "vendor" | "admin",
+    targetRole: "user" | "vendor" | "admin",
+  ) => {
+    if (!activeUser || !message) return;
+
+    setLoadingSuggestions(true);
+    try {
+      console.log({ message, role, targetRole });
+      const res = await getAiSuggestions(message, role, targetRole);
+
+      if (res && res.suggestions) {
+        setSuggestions(res.suggestions);
+      } else {
+        console.warn("API returned no suggestions");
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  console.log("Suggestions: ", suggestions);
 
   // fetching old messages
   useEffect(() => {
@@ -141,8 +173,6 @@ export default function ChatClient({
               const hasNotification =
                 user.chat?.lastMessageBy !== currentUserId &&
                 user.chat?.unreadCount > 0;
-
-              console.log("USER: ", user);
 
               return (
                 <button
@@ -250,6 +280,68 @@ export default function ChatClient({
                     )}
                   </div>
 
+                  <div className="flex items-center gap-2 ">
+                    <Button
+                      disabled={loadingSuggestions || chatHistory.length === 0}
+                      onClick={() => {
+                        const lastMsg =
+                          chatHistory[chatHistory.length - 1]?.text;
+                        if (lastMsg) {
+                          fetchSuggestions(
+                            lastMsg,
+                            currentUerRole,
+                            activeUser.role!,
+                          );
+                        }
+                      }}
+                      className="text-purple-400"
+                    >
+                      {loadingSuggestions ? (
+                        "Thinking..."
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4" /> AI Co-Pilot
+                        </>
+                      )}
+                    </Button>
+                  </div>
+
+                  {/* mapping AI suggestions */}
+                  <div className="space-y-3">
+                    {loadingSuggestions
+                      ? [1, 2, 3].map((i) => (
+                          <div
+                            key={i}
+                            className="h-10 w-full bg-zinc-900/50 animate-pulse rounded-xl border border-zinc-800/50"
+                          />
+                        ))
+                      : suggestions.map((text, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setMessage(text)}
+                            className="group relative w-full text-left p-3.5 text-[13px] bg-zinc-900/30 border border-zinc-800 rounded-xl 
+                   text-zinc-400 hover:text-white hover:border-blue-500/50 hover:bg-zinc-800/50 
+                   transition-all duration-300 ease-out hover:translate-x-1"
+                          >
+                            <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-4 bg-blue-500 rounded-r-full opacity-0 group-hover:opacity-100 transition-opacity" />
+
+                            <span className="line-clamp-2 leading-snug">
+                              {text}
+                            </span>
+
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-all transform translate-x-2 group-hover:translate-x-0">
+                              <Send className="w-3 h-3 text-blue-400" />
+                            </div>
+                          </button>
+                        ))}
+
+                    {!loadingSuggestions && suggestions.length > 0 && (
+                      <p className="text-[10px] text-zinc-500 px-1 italic">
+                        Click a suggestion to draft your reply.
+                      </p>
+                    )}
+                  </div>
+
                   {/* New Messages Section */}
                   <div className="space-y-4">
                     {newMessages.map((msg) => (
@@ -273,38 +365,6 @@ export default function ChatClient({
                   </div>
                 </div>
               </ScrollArea>
-
-              {/* Right Column: AI Co-Pilot */}
-              <aside className="w-full lg:w-72 border-l border-zinc-800 bg-black p-6 space-y-6">
-                <div className="flex items-center gap-2 text-purple-400">
-                  <Sparkles className="w-4 h-4" />
-                  <h3 className="text-[11px] font-black uppercase tracking-tighter">
-                    AI Co-Pilot
-                  </h3>
-                </div>
-
-                <div className="space-y-2">
-                  {[
-                    "Where is my order?",
-                    "Is there a discount?",
-                    "Refund policy details",
-                  ].map((text, i) => (
-                    <button
-                      key={i}
-                      className="w-full text-left p-3 text-xs bg-zinc-950 border border-zinc-800 rounded-xl text-zinc-400 hover:border-zinc-500 hover:text-white transition-all duration-200"
-                    >
-                      {text}
-                    </button>
-                  ))}
-                </div>
-
-                <div className="p-4 rounded-xl bg-zinc-900/50 border border-zinc-800">
-                  <p className="text-[10px] text-zinc-500 leading-tight">
-                    AI is analyzing this conversation to provide relevant
-                    shortcuts.
-                  </p>
-                </div>
-              </aside>
             </div>
 
             {/* --- INPUT BAR --- */}

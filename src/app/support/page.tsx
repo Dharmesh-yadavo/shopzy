@@ -16,7 +16,11 @@ const page = async () => {
 
   return (
     <div>
-      <ChatClient supportUsers={data} currentUserId={user?.id} />
+      <ChatClient
+        supportUsers={data}
+        currentUerRole={user?.role}
+        currentUserId={user?.id}
+      />
     </div>
   );
 };
